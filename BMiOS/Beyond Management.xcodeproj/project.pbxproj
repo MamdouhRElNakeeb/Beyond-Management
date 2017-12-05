@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3397B3C71FD6870E00351A26 /* RegisterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3C61FD6870E00351A26 /* RegisterVC.swift */; };
+		3397B3CA1FD6896A00351A26 /* VisaServicesTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3C91FD6896A00351A26 /* VisaServicesTVC.swift */; };
+		3397B3CD1FD68B6400351A26 /* VisaServicesTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3CC1FD68B6400351A26 /* VisaServicesTVCell.swift */; };
+		3397B3D01FD68E3300351A26 /* Visa.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3CF1FD68E3300351A26 /* Visa.swift */; };
 		33F74FBB1FD232BC0087472F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F74FBA1FD232BC0087472F /* AppDelegate.swift */; };
-		33F74FBD1FD232BC0087472F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F74FBC1FD232BC0087472F /* ViewController.swift */; };
+		33F74FBD1FD232BC0087472F /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F74FBC1FD232BC0087472F /* LoginVC.swift */; };
 		33F74FC01FD232BC0087472F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33F74FBE1FD232BC0087472F /* Main.storyboard */; };
 		33F74FC21FD232BC0087472F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 33F74FC11FD232BC0087472F /* Assets.xcassets */; };
 		33F74FC51FD232BC0087472F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33F74FC31FD232BC0087472F /* LaunchScreen.storyboard */; };
@@ -16,9 +20,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3397B3C61FD6870E00351A26 /* RegisterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterVC.swift; sourceTree = "<group>"; };
+		3397B3C91FD6896A00351A26 /* VisaServicesTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisaServicesTVC.swift; sourceTree = "<group>"; };
+		3397B3CC1FD68B6400351A26 /* VisaServicesTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisaServicesTVCell.swift; sourceTree = "<group>"; };
+		3397B3CF1FD68E3300351A26 /* Visa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Visa.swift; sourceTree = "<group>"; };
 		33F74FB71FD232BC0087472F /* Beyond Management.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beyond Management.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33F74FBA1FD232BC0087472F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		33F74FBC1FD232BC0087472F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		33F74FBC1FD232BC0087472F /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
 		33F74FBF1FD232BC0087472F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		33F74FC11FD232BC0087472F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		33F74FC41FD232BC0087472F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -49,6 +57,32 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		3397B3C81FD6871500351A26 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				33F74FBC1FD232BC0087472F /* LoginVC.swift */,
+				3397B3C61FD6870E00351A26 /* RegisterVC.swift */,
+				3397B3C91FD6896A00351A26 /* VisaServicesTVC.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		3397B3CB1FD68B4300351A26 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				3397B3CC1FD68B6400351A26 /* VisaServicesTVCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		3397B3CE1FD68E2300351A26 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				3397B3CF1FD68E3300351A26 /* Visa.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		33F74FAE1FD232BC0087472F = {
 			isa = PBXGroup;
 			children = (
@@ -70,8 +104,10 @@
 		33F74FB91FD232BC0087472F /* Beyond Management */ = {
 			isa = PBXGroup;
 			children = (
+				3397B3CE1FD68E2300351A26 /* Models */,
+				3397B3CB1FD68B4300351A26 /* Cells */,
+				3397B3C81FD6871500351A26 /* Controllers */,
 				33F74FBA1FD232BC0087472F /* AppDelegate.swift */,
-				33F74FBC1FD232BC0087472F /* ViewController.swift */,
 				33F74FBE1FD232BC0087472F /* Main.storyboard */,
 				33F74FC11FD232BC0087472F /* Assets.xcassets */,
 				33F74FC31FD232BC0087472F /* LaunchScreen.storyboard */,
@@ -221,7 +257,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				33F74FBD1FD232BC0087472F /* ViewController.swift in Sources */,
+				3397B3D01FD68E3300351A26 /* Visa.swift in Sources */,
+				3397B3CA1FD6896A00351A26 /* VisaServicesTVC.swift in Sources */,
+				3397B3C71FD6870E00351A26 /* RegisterVC.swift in Sources */,
+				3397B3CD1FD68B6400351A26 /* VisaServicesTVCell.swift in Sources */,
+				33F74FBD1FD232BC0087472F /* LoginVC.swift in Sources */,
 				33F74FBB1FD232BC0087472F /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
