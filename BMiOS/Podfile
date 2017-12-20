@@ -8,5 +8,13 @@ target 'Beyond Management' do
   # Pods for Beyond Management
 pod 'Alamofire', '~> 4.3'
 pod 'SDWebImage/WebP', '~>3.8'
+pod 'BraintreeDropIn'
+pod 'Braintree/PayPal'
+pod 'Braintree/Apple-Pay'
+pod 'SideMenu'
+
+pod 'Firebase/Core'
+pod 'Fabric', '~> 1.7.2'
+pod 'Crashlytics', '~> 3.9.3'
 
 end

@@ -36,4 +36,8 @@ class Visa{
         self.advPrice = advPrice
         
     }
+    
+    init() {
+        
+    }
 }
