@@ -28,8 +28,13 @@ require ("secure/bmconn.php");
 $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
+//secure password
+$hash = $access->hashSSHA($password);
+$secured_password = $hash["encrypted"]; // encrypted password
+$salt = $hash["salt"]; // salt
 
-$result = $access->updateUser($name, $username, $password, $role, $id);
+if (!empty($id))
+    $result = $access->updateUser($name, $username, $secured_password, $salt, $role, $id);
 
 if ($result){
 
@@ -37,7 +42,7 @@ if ($result){
 }
 else{
 
-    $result = $access->addUser($name, $username, $password, $role);
+    $result = $access->addUser($name, $username, $secured_password, $salt, $role);
 
     if ($result){
 

@@ -105,12 +105,12 @@ $result = $access->getTableContent("documents");
                         <p>Documents</p>
                     </a>
                 </li>
-                <li>
-                    <a href="payments.php">
-                        <i class="material-icons">attach_money</i>
-                        <p>Payments</p>
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="payments.php">-->
+<!--                        <i class="material-icons">attach_money</i>-->
+<!--                        <p>Payments</p>-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="users.php">
                         <i class="material-icons">group</i>

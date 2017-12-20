@@ -110,12 +110,12 @@ $documents = mysqli_num_rows($access->getTableContent("documents"));
                         <p>Documents</p>
                     </a>
                 </li>
-                <li>
-                    <a href="payments.php">
-                        <i class="material-icons">attach_money</i>
-                        <p>Payments</p>
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="payments.php">-->
+<!--                        <i class="material-icons">attach_money</i>-->
+<!--                        <p>Payments</p>-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="users.php">
                         <i class="material-icons">group</i>
@@ -264,22 +264,22 @@ $documents = mysqli_num_rows($access->getTableContent("documents"));
                         </div>
                     </div>
 
-                    <div class="col-lg-4 col-md-8 col-sm-8">
-                        <div class="card card-stats" onclick="location.href='payments.php';" style="cursor: pointer;">
-                            <div class="card-header" data-background-color="red">
-                                <i class="material-icons">attach_money</i>
-                            </div>
-                            <div class="card-content">
-                                <p class="category">Payments</p>
-                                <h3 class="title"><?php echo $payments; ?></h3>
-                            </div>
-                            <div class="card-footer">
-                                <div class="stats">
-                                    <i class="material-icons">update</i> Just Updated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="col-lg-4 col-md-8 col-sm-8">-->
+<!--                        <div class="card card-stats" onclick="location.href='payments.php';" style="cursor: pointer;">-->
+<!--                            <div class="card-header" data-background-color="red">-->
+<!--                                <i class="material-icons">attach_money</i>-->
+<!--                            </div>-->
+<!--                            <div class="card-content">-->
+<!--                                <p class="category">Payments</p>-->
+<!--                                <h3 class="title">--><?php //echo $payments; ?><!--</h3>-->
+<!--                            </div>-->
+<!--                            <div class="card-footer">-->
+<!--                                <div class="stats">-->
+<!--                                    <i class="material-icons">update</i> Just Updated-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
 
                     <div class="col-lg-4 col-md-8 col-sm-8">
                         <div class="card card-stats" onclick="location.href='users.php';" style="cursor: pointer;">

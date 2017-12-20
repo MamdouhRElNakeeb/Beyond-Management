@@ -22,7 +22,7 @@ require ("../secure/bmconn.php");
 $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
-$result = $access->getTableContent("applications");
+$result = $access->getApplications();
 
 ?>
 
@@ -105,12 +105,12 @@ $result = $access->getTableContent("applications");
                         <p>Documents</p>
                     </a>
                 </li>
-                <li>
-                    <a href="payments.php">
-                        <i class="material-icons">attach_money</i>
-                        <p>Payments</p>
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="payments.php">-->
+<!--                        <i class="material-icons">attach_money</i>-->
+<!--                        <p>Payments</p>-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="users.php">
                         <i class="material-icons">group</i>
@@ -201,7 +201,9 @@ $result = $access->getTableContent("applications");
 
                                     <th>Applicant</th>
                                     <th>Service</th>
-                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Application Status</th>
+                                    <th>Time</th>
                                     <th>Action</th>
                                     </thead>
                                     <tbody>
@@ -211,11 +213,13 @@ $result = $access->getTableContent("applications");
 
                                         ?>
                                         <tr>
-                                            <td data-collapsable-parent="1"><?php echo $row["applicant"]; ?></td>
-                                            <td><?php echo $row["service"]; ?></td>
-                                            <td><?php echo $row["status"]; ?></td>
+                                            <td data-collapsable-parent="1"><?php echo $row["name"]; ?></td>
+                                            <td><?php echo $row["visa"]. " " .$row["type"]; ?></td>
+                                            <td><?php echo $row["amount"]; ?></td>
+                                            <td><?php echo $row["app_status"]; ?></td>
+                                            <td><?php echo $row["created_at"]; ?></td>
                                             <td class="td-actions text-right">
-                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. ',' .$row["applicant"]. ',' .$row["service"]. ',' .$row["status"]; ?>">
+                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. ',' .$row["name"]. ',' .$row["visa"]. ' ' .$row["type"]. ',' .$row["app_status"]; ?>">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                                 <button value="<?php echo $row["id"]; ?>" type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs remove-btn">

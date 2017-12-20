@@ -10,7 +10,7 @@ $email = htmlentities($_REQUEST["email"]);
 $password = htmlentities($_REQUEST["password"]);
 $regID = htmlentities($_REQUEST["regID"]);
 
-if (empty($email) || empty($password) || empty($regID)){
+if (empty($email) || empty($password)){
 
     $returnArray["status"] = "400";
     $returnArray["message"] = "Missing Fields!";
@@ -24,7 +24,7 @@ require ("secure/bmconn.php");
 $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
-$user = $access->selectUser($email);
+$user = $access->selectApplicant($email);
 
 if ($user){
 
@@ -41,19 +41,20 @@ if ($user){
         $returnArray["id"] = $user["id"];
         $returnArray["name"] = $user["name"];
         $returnArray["email"] = $user["email"];
-        $returnArray["mobile"] = $user["mobile"];
-        $returnArray["gender"] = $user["gender"];
-        $access->updateUser($user["name"], $user["email"], $user["mobile"], $secured_password, $salt, $regID, $user["id"]);
+        $returnArray["phone"] = $user["phone"];
+        $returnArray["address"] = $user["address"];
+        $returnArray["customer_id"] = $user["customer_id"];
+//        $access->updateUser($user["name"], $user["email"], $user["mobile"], $secured_password, $salt, $regID, $user["id"]);
     }
     else{
         $returnArray["error"] = TRUE;
-        $returnArray["message"] = "Password is Incorrect";
+        $returnArray["message"] = "Password is incorrect";
     }
 }
 else{
 
     $returnArray["error"] = TRUE;
-    $returnArray["message"] = "User isn't existed!";
+    $returnArray["message"] = "User not found!";
 }
 
 $access->disconnect();

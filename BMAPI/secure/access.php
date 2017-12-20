@@ -108,20 +108,60 @@ class access{
         }
     }
 
-
-    // insert appointment into database
-    public function addJob($userName1, $title, $content, $address, $mobile){
-        $sql = "INSERT INTO jobs SET username=?, title=?, content=?, address=?, mobile=?";
+    // insert application into database
+    public function addApplication($id, $visaName, $visaType, $payId){
+        $sql = "INSERT INTO applications SET applicant_id=?, visa=?, type=?, payment_id=?";
         $statement = $this->conn->prepare($sql);
         if(!$statement){
             throw new Exception($statement->error);
         }
         // bind 8 parameters of type string to be placed in $sql command
-        $statement->bind_param("sssss", $userName1, $title, $content, $address, $mobile);
+        $statement->bind_param("ssss", $id, $visaName, $visaType, $payId);
         $returnValue = $statement->execute();
+        $returnValue = $statement->insert_id;
         return $returnValue;
     }
 
+    // select application from database
+    public function selectApplication($applicant_id){
+        $sql = "SELECT * FROM applications WHERE applicant_id = '".$applicant_id."' ";
+        $result = $this->conn->query($sql);
+        if($result !=null && (mysqli_num_rows($result) >=1)){
+            $row = $result->fetch_array(MYSQLI_ASSOC);
+            if(!empty($row)){
+                $returnArray = $row;
+                return $returnArray;
+            }
+        }
+    }
+
+    // select applications from database
+    public function getApplications(){
+        $sql = "SELECT applications.id, applications.visa, applications.type, 
+                  applications.status AS app_status, applications.created_at,
+	              applicants.name, applicants.email, payments.amount, 
+	              payments.payment_id, payments.status AS pay_status
+                FROM applications
+                INNER JOIN applicants ON applications.applicant_id = applicants.id
+                INNER JOIN payments ON applications.payment_id = payments.payment_id";
+
+        $result = $this->conn->query($sql);
+
+        return $result;
+    }
+
+    // insert payment into database
+    public function addPayment($application_id, $payId, $amount, $status){
+        $sql = "INSERT INTO payments SET application_id=?, payment_id=?, amount=?, status=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 8 parameters of type string to be placed in $sql command
+        $statement->bind_param("ssss", $application_id, $payId, $amount, $status);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
 
     // insert appointment into database
     public function approveJob($id){
@@ -282,27 +322,27 @@ class access{
     }
 
     // insert offer into database
-    public function addUser($name, $username1, $password, $role){
-        $sql = "INSERT INTO users SET name=?, username=?, password=?, role=?";
+    public function addUser($name, $username1, $password, $salt, $role){
+        $sql = "INSERT INTO users SET name=?, username=?, password=?, salt=?, role=?";
         $statement = $this->conn->prepare($sql);
         if(!$statement){
             throw new Exception($statement->error);
         }
         // bind 2 parameters of type string to be placed in $sql command
-        $statement->bind_param("ssss", $name, $username1, $password, $role);
+        $statement->bind_param("sssss", $name, $username1, $password, $salt, $role);
         $returnValue = $statement->execute();
         return $returnValue;
     }
 
     // insert offer into database
-    public function updateUser($name, $username1, $password, $role, $id){
-        $sql = "UPDATE users SET name=?, username=?, password=?, role=? WHERE id=?";
+    public function updateUser($name, $username1, $password, $salt, $role, $id){
+        $sql = "UPDATE users SET name=?, username=?, password=?, salt=?, role=? WHERE id=?";
         $statement = $this->conn->prepare($sql);
         if(!$statement){
             throw new Exception($statement->error);
         }
         // bind 2 parameters of type string to be placed in $sql command
-        $statement->bind_param("sssss", $name, $username1, $password, $role, $id);
+        $statement->bind_param("ssssss", $name, $username1, $password, $salt, $role, $id);
         $returnValue = $statement->execute();
         return $returnValue;
     }
@@ -320,11 +360,23 @@ class access{
         }
     }
 
+    public function selectApplicantWithCustomerId($customerId){
+        $sql = "SELECT * FROM applicants WHERE customer_id = '".$customerId."' ";
+        $result = $this->conn->query($sql);
+        if($result !=null && (mysqli_num_rows($result) >=1)){
+            $row = $result->fetch_array(MYSQLI_ASSOC);
+            if(!empty($row)){
+                $returnArray = $row;
+                return $returnArray;
+            }
+        }
+    }
+
     // insert user into database
     public function registerUser($name, $email, $password, $salt, $phone, $address, $regID){
         $result = $this->selectUser($email);
         if ($result){
-            return;
+            return false;
         }
         else{
             $sql = "INSERT INTO applicants SET name=?, email=?, password=?, salt=?, phone=?, address=?, reg_id=?";
@@ -334,6 +386,24 @@ class access{
             }
             // bind 9 parameters of type string to be placed in $sql command
             $statement->bind_param("sssssss", $name, $email, $password, $salt, $phone, $address, $regID);
+            $returnValue = $statement->execute();
+            return $returnValue;
+        }
+    }
+
+    public function updateApplicantWithCustId($id, $customerId){
+        $result = $this->selectUser($id);
+        if ($result){
+            return false;
+        }
+        else{
+            $sql = "UPDATE applicants SET customer_id=? WHERE id=?";
+            $statement = $this->conn->prepare($sql);
+            if(!$statement){
+                throw new Exception($statement->error);
+            }
+            // bind 9 parameters of type string to be placed in $sql command
+            $statement->bind_param("ss", $customerId, $id);
             $returnValue = $statement->execute();
             return $returnValue;
         }

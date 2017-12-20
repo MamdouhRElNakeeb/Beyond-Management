@@ -106,12 +106,12 @@ $result = $access->getTableContent("immigration");
                         <p>Documents</p>
                     </a>
                 </li>
-                <li>
-                    <a href="payments.php">
-                        <i class="material-icons">attach_money</i>
-                        <p>Payments</p>
-                    </a>
-                </li>
+<!--                <li>-->
+<!--                    <a href="payments.php">-->
+<!--                        <i class="material-icons">attach_money</i>-->
+<!--                        <p>Payments</p>-->
+<!--                    </a>-->
+<!--                </li>-->
                 <li>
                     <a href="users.php">
                         <i class="material-icons">group</i>
@@ -228,7 +228,7 @@ $result = $access->getTableContent("immigration");
                                             <td data-toggle="tooltip" data-placement="bottom" data-container="body" title="<?php echo $row["inter_info"]; ?>"><?php echo $row["inter_price"]; ?></td>
                                             <td data-toggle="tooltip" data-placement="bottom" data-container="body" title="<?php echo $row["advanced_info"]; ?>"><?php echo $row["advanced_price"]; ?></td>
                                             <td class="td-actions text-right">
-                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. ',' .$row["name"]. ',' .$row["img"]. ',' .$row["info"]. ',' .$row["basic_info"]. ',' .$row["basic_price"]. ',' .$row["inter_info"]. ',' .$row["inter_price"]. ',' .$row["advanced_info"]. ',' .$row["advanced_price"]; ?>">
+                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. '~' .$row["name"]. '~' .$row["img"]. '~' .$row["info"]. '~' .$row["basic_info"]. '~' .$row["basic_price"]. '~' .$row["inter_info"]. '~' .$row["inter_price"]. '~' .$row["advanced_info"]. '~' .$row["advanced_price"]; ?>">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                                 <button value="<?php echo $row["id"]; ?>" type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs remove-btn">
@@ -427,7 +427,7 @@ $result = $access->getTableContent("immigration");
     $('.remove-btn').click(function(){
         /* when the submit button in the modal is clicked, submit the form */
 
-        var dataString = "tblName=" + "immigration" + "&dir=" + "ImmigImgs" +  "&id="+ $(this).attr("value");
+        var dataString = "tblName=" + "immigration" + "&dir=" + "ServicesImgs" +  "&id="+ $(this).attr("value");
 
         $.ajax({
             type: "POST",
@@ -444,7 +444,7 @@ $result = $access->getTableContent("immigration");
 
     $('.edit-btn').click(function(){
         /* when the submit button in the modal is clicked, submit the form */
-        var paramsArr = $(this).attr("value").split(',');
+        var paramsArr = $(this).attr("value").split('~');
 
         $('#serviceid').val(paramsArr[0]);
         $('#name').val(paramsArr[1]);
