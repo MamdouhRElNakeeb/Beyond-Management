@@ -11,7 +11,7 @@ $email = htmlentities($_REQUEST["email"]);
 $phone = htmlentities($_REQUEST["phone"]);
 $address = htmlentities($_REQUEST["address"]);
 $password = htmlentities($_REQUEST["password"]);
-$regID = htmlentities($_REQUEST["reg_id"]);
+$regID = htmlentities($_REQUEST["token"]);
 
 if (empty($name) || empty($email) || empty($password) || empty($phone)){
     $returnArray["error"] = TRUE;

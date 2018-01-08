@@ -7,11 +7,9 @@
  */
 
 $customerId = htmlentities($_REQUEST["customerId"]);
-$visaName = htmlentities($_REQUEST["visaName"]);
-$visaType = htmlentities($_REQUEST["visaType"]);
 $payId = htmlentities($_REQUEST["payId"]);
 
-if (empty($customerId) || empty($visaName) || empty($visaType) || empty($payId)){
+if (empty($customerId) || empty($payId)){
     $returnArray["success"] = false;
     $returnArray["message"] = "Missing Fields!";
     echo json_encode($returnArray);
@@ -30,24 +28,7 @@ $user = $access->selectApplicantWithCustomerId($customerId);
 
 if ($user){
 
-    $result = $access->selectApplication($user["id"]);
-
-    if ($result){
-        while ($row = mysqli_fetch_array($result)) {
-
-            if ($row["visa"] === $visaName && $row["type"] === $visaType && (time() - strtotime($row["created_at"]) < 43200 /* 30 days*/)){
-
-                $returnArray["success"] = false;
-                $returnArray["msg"] = "You have already applied for this VISA within this month";
-                echo $returnArray;
-                exit;
-
-            }
-
-        }
-    }
-
-    $result = $access->addApplication($user["id"], $visaName, $visaType, $payId);
+    $result = $access->addSkypeRequest($user["id"], $payId, "skype");
 
     if ($result){
 
@@ -56,7 +37,7 @@ if ($user){
         $transaction = Braintree_Transaction::find($payId);
 
         if ($transaction){
-            $payment = $access->addPayment($result, $payId, $transaction->amount, $transaction->status, "visa");
+            $payment = $access->addPayment($result, $payId, $transaction->amount, $transaction->status, "skype");
 
             if (!$payment){
                 $returnArray["success"] = false;
@@ -78,7 +59,7 @@ if ($user){
     }
     else {
         $returnArray["success"] = false;
-        $returnArray["msg"] = "Some error occurred during adding application";
+        $returnArray["msg"] = "Some error occurred during adding Skype request";
         echo $returnArray;
         exit;
     }

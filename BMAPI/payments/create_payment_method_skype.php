@@ -21,12 +21,10 @@
                 $response['data'] = $result->transaction;
                 $response['paySuccess'] = true;
 
-                $url = 'http://bm.nakeeb.me/visaApply.php';
+                $url = 'http://bm.nakeeb.me/skypeRequest.php';
 
                 // what post fields?
                 $data = array('customerId' => $_POST["customerId"],
-                                'visaName' => $_POST["visaName"],
-                                'visaType' => $_POST["visaType"],
                                 'payId' => $result->transaction->id);
 
                 // build the urlencoded data

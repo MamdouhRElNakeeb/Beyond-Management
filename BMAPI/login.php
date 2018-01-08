@@ -8,7 +8,7 @@
 
 $email = htmlentities($_REQUEST["email"]);
 $password = htmlentities($_REQUEST["password"]);
-$regID = htmlentities($_REQUEST["regID"]);
+$regID = htmlentities($_REQUEST["token"]);
 
 if (empty($email) || empty($password)){
 
@@ -44,7 +44,7 @@ if ($user){
         $returnArray["phone"] = $user["phone"];
         $returnArray["address"] = $user["address"];
         $returnArray["customer_id"] = $user["customer_id"];
-//        $access->updateUser($user["name"], $user["email"], $user["mobile"], $secured_password, $salt, $regID, $user["id"]);
+        $access->updateApplicantWithRegID($regID, $user["id"]);
     }
     else{
         $returnArray["error"] = TRUE;

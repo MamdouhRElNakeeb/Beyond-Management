@@ -24,6 +24,8 @@ $access->connect();
 
 $result = $access->getApplications();
 
+$documents = $access->getTableContent("documents");
+
 ?>
 
 
@@ -105,12 +107,12 @@ $result = $access->getApplications();
                         <p>Documents</p>
                     </a>
                 </li>
-<!--                <li>-->
-<!--                    <a href="payments.php">-->
-<!--                        <i class="material-icons">attach_money</i>-->
-<!--                        <p>Payments</p>-->
-<!--                    </a>-->
-<!--                </li>-->
+                <!--                <li>-->
+                <!--                    <a href="payments.php">-->
+                <!--                        <i class="material-icons">attach_money</i>-->
+                <!--                        <p>Payments</p>-->
+                <!--                    </a>-->
+                <!--                </li>-->
                 <li>
                     <a href="users.php">
                         <i class="material-icons">group</i>
@@ -204,6 +206,7 @@ $result = $access->getApplications();
                                     <th>Payment</th>
                                     <th>Application Status</th>
                                     <th>Time</th>
+                                    <th>Documents</th>
                                     <th>Action</th>
                                     </thead>
                                     <tbody>
@@ -213,11 +216,16 @@ $result = $access->getApplications();
 
                                         ?>
                                         <tr>
-                                            <td data-collapsable-parent="1"><?php echo $row["name"]; ?></td>
+                                            <td><?php echo $row["name"]; ?></td>
                                             <td><?php echo $row["visa"]. " " .$row["type"]; ?></td>
                                             <td><?php echo $row["amount"]; ?></td>
                                             <td><?php echo $row["app_status"]; ?></td>
                                             <td><?php echo $row["created_at"]; ?></td>
+                                            <td>
+                                                <button rel="tooltip" title="View Documents" class="btn btn-success btn-simple btn-xs vdoc-btn" value="<?php echo $row["id"];?>">
+                                                    <i class="fa fa-file-image-o"></i>
+                                                </button>
+                                            </td>
                                             <td class="td-actions text-right">
                                                 <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. ',' .$row["name"]. ',' .$row["visa"]. ' ' .$row["type"]. ',' .$row["app_status"]; ?>">
                                                     <i class="fa fa-edit"></i>
@@ -288,22 +296,22 @@ $result = $access->getApplications();
                     <input id="id" style="display: none;">
 
                     <div class="col-sm-12">
-                            <div class="input-group">
+                        <div class="input-group">
 		                        <span class="input-group-addon">
 			                        <i class="material-icons">format_size</i>
 		                        </span>
-                                <input id="applicant" type="text" class="form-control" placeholder="Applicant Name">
-                            </div>
+                            <input id="applicant" type="text" class="form-control" placeholder="Applicant Name">
                         </div>
+                    </div>
 
-                        <div class="col-sm-12">
-                            <div class="input-group">
+                    <div class="col-sm-12">
+                        <div class="input-group">
 		                        <span class="input-group-addon">
 			                        <i class="material-icons">content_paste</i>
 		                        </span>
-                                <input id="service" type="text" class="form-control" placeholder="Immigration Service">
-                            </div>
+                            <input id="service" type="text" class="form-control" placeholder="Immigration Service">
                         </div>
+                    </div>
 
 
                 </form>
@@ -315,6 +323,68 @@ $result = $access->getApplications();
                 <button id="upload-ad-btn" type="submit" class="btn btn-info btn-simple">Submit</button>
             </div>
         </div>
+    </div>
+</div>
+
+
+<!-- Modal Core -->
+<div class="modal fade" id="documentsModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Submitted Documents</h4>
+            </div>
+            <div class="modal-body">
+
+
+                <div class="card-content table-responsive">
+                    <table id="docTbl" class="table">
+                        <tr>
+                            <thead class="text-primary">
+                            <th>Document</th>
+                            <th>Submission</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                            </thead>
+                        </tr>
+                    </table>
+                </div>
+
+                <form id="upload_ad" action="" method="post">
+
+                    <input id="application_id" style="display: none;">
+
+                    <div class="col-sm-12">
+                        <div class="input-group">
+                            <div class="col-md-3 dropdown">
+                                <a href="#" class="btn btn-simple dropdown-toggle" data-toggle="dropdown" id="document">
+                                    Assign new document
+                                    <b class="caret"></b>
+                                </a>
+                                <ul class="dropdown-menu" data-background-color="green" id="document_dd">
+                                    <?php
+                                    while ($row = mysqli_fetch_array($documents)) {
+
+                                        ?>
+                                        <li value="<?php echo $row["id"]; ?>"><a><?php echo $row["name"]; ?></a></li>
+                                        <?php
+                                    }
+                                    ?>
+                                </ul>
+                            </div>
+                        </div>
+
+                </form>
+            </div>
+
+
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-default btn-simple" data-dismiss="modal">Close</button>
+                <button id="edit-userdocs-btn" type="submit" class="btn btn-info btn-simple">Submit</button>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -426,9 +496,198 @@ $result = $access->getApplications();
     });
 
 
-    $('[data-collapsable-parent]').click(function(){
-        var child = $(this).attr("data-collapsable-parent");
-        $('[data-collapsable-child="'+ child + '"]').toggle('slow');
+    $('.vdoc-btn').click(function(){
+
+        var app_id = $(this).attr("value");
+
+        $('#application_id').val(app_id);
+
+        var subTable = document.getElementById("docTbl");
+
+
+        var form = new FormData();
+        form.append("app_id", app_id);
+
+
+        var rowCount = subTable.rows.length;
+        for (var x=rowCount-1; x>0; x--) {
+            subTable.deleteRow(x);
+        }
+
+        $('#documentsModal').modal('show');
+
+        $.ajax({
+            url: "../getDocSubmissions.php", // Url to which the request is send
+            type: "POST",
+            dataType: 'text',// Type of request to be send, called as method
+            data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData:false,        // To send DOMDocument or non processed data file it is set to false
+            success: function(data)   // A function to be called if request succeeds
+            {
+//                alert(data);
+                var returnedData = JSON.parse(data);
+
+                subTable.style.display = 'block';
+
+                var tbody = document.createElement("tbody");
+
+                for (var i = 0 ; i < returnedData.length; i++) {
+                    var tr = document.createElement("tr");
+
+                    // for each inner array cell
+                    // create td then text, append
+                    var tdName = document.createElement("td");
+                    var name = document.createTextNode(returnedData[i].name);
+                    tdName.appendChild(name);
+
+                    var tdStatus = document.createElement("td");
+                    var status = document.createTextNode(returnedData[i].status);
+                    tdStatus.appendChild(status);
+
+                    var type = returnedData[i].type;
+                    var tdUrl = document.createElement("td");
+                    var url = returnedData[i].url;
+
+                    var tdActions = document.createElement("td");
+                    tdActions.innerHTML =
+                        '<button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs approve-btn" value="' + returnedData[i].id + '">' +
+                        '<i class="fa fa-check"></i>' +
+                        '</button>' +
+                        '<button value="' + returnedData[i].id + '" type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs reject-btn">' +
+                        '<i class="fa fa-times"></i>' +
+                        '</button>';
+
+                    tdActions.style.display = 'none';
+
+                    if (returnedData[i].status != "new"){
+
+                        if (type == "0"){
+
+                            var img = document.createElement("img");
+                            img.src = "http://bm.nakeeb.me/ReqSubmissions/" + url;
+
+                            img.style = 'height: 100px; width: auto';
+                            tdUrl.appendChild(img);
+                        }
+                        else{
+                            var link = document.createElement("url"); //or grab it by tagname etc
+                            link.href = url;
+                            link.innerHTML = '<a target="_blank" href="' + url + '">Click here to view</a>';
+
+                            tdUrl.appendChild(link);
+                        }
+                        tdActions.style.display = 'block';
+                    }
+
+
+                    tr.appendChild(tdName);
+                    tr.appendChild(tdUrl);
+                    tr.appendChild(tdStatus);
+                    tr.appendChild(tdActions);
+
+
+                    // append row to table
+                    // IE7 requires append row to tbody, append tbody to table
+                    tbody.appendChild(tr);
+                    subTable.appendChild(tbody);
+
+
+                }
+            }
+        });
+        return false;
+    });
+
+    $('button#approve-btn').click(function(){
+        /* when the submit button in the modal is clicked, submit the form */
+        var req_id = $(this).attr("value");
+
+        var form = new FormData();
+        form.append("req_id", req_id);
+        form.append("status", "approved");
+
+        alert("approved");
+
+        $.ajax({
+            url: "../updateDocStatus.php", // Url to which the request is send
+            type: "POST",
+            dataType: 'json',// Type of request to be send, called as method
+            data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData: false,        // To send DOMDocument or non processed data file it is set to false
+            success: function (data)   // A function to be called if request succeeds
+            {
+
+                alert(data.message);
+
+            }
+        });
+
+        return false;
+    });
+
+    $('button#reject-btn').click(function(){
+        /* when the submit button in the modal is clicked, submit the form */
+        var req_id = $(this).attr("value");
+
+        var form = new FormData();
+        form.append("req_id", req_id);
+        form.append("status", "rejected");
+
+        alert("rejected");
+
+        $.ajax({
+            url: "../updateDocStatus.php", // Url to which the request is send
+            type: "POST",
+            dataType: 'json',// Type of request to be send, called as method
+            data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData: false,        // To send DOMDocument or non processed data file it is set to false
+            success: function (data)   // A function to be called if request succeeds
+            {
+
+                alert(data.message);
+
+            }
+        });
+
+        return false;
+    });
+
+    var newDoc = "";
+    $("#document_dd li").click(function () {
+        $("#document").text($(this).text());
+        newDoc = $(this).attr('value');
+    });
+
+    $('button#edit-userdocs-btn').on('click', function(e){
+
+
+        //var dataString = 'ad_name=' + $('#ad_name').val() + "&file=" + $("#file").files[0] + "&category=" + category;
+        //alert(dataString);
+        var form = new FormData();
+        form.append("doc_id", newDoc);
+        form.append("app_id", $('#application_id').val());
+
+        $.ajax({
+            url: "../assignDocument.php", // Url to which the request is send
+            type: "POST",
+            dataType: 'json',// Type of request to be send, called as method
+            data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData:false,        // To send DOMDocument or non processed data file it is set to false
+            success: function(data)   // A function to be called if request succeeds
+            {
+
+                alert(data.message);
+                location.reload();
+            }
+        });
     });
 
 </script>

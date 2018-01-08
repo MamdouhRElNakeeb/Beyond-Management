@@ -23,8 +23,6 @@ $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
 $result = $access->getTableContent("applicants");
-$jobsAll = mysqli_num_rows($result);
-$jobs = mysqli_num_rows($access->getJobs());
 
 ?>
 
@@ -378,7 +376,7 @@ $jobs = mysqli_num_rows($access->getJobs());
             data: dataString,
             success: function() {
                 $(this).hide();
-                alert("Job Removed");
+                alert("Applicant Removed");
                 location.reload();
             }
         });
