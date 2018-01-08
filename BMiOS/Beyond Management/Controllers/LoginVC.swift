@@ -45,14 +45,28 @@ class LoginVC: UIViewController {
         let email = emailTF.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let password = passwordTF.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         
-        if ((email?.isEmpty)! || (password?.isEmpty)!) {
-            print("missing fields")
+        if (email?.isEmpty)! {
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you Email", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            print("missing email")
+            return
+        }
+        
+        if (password?.isEmpty)! {
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you password", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            print("missing password")
             return
         }
         
         let params: Parameters = [
             "email": email!,
-            "password": password!
+            "password": password!,
+            "token": UserDefaults.standard.string(forKey: "deviceToken") ?? "0"
         ]
         
         print(params)
@@ -78,14 +92,17 @@ class LoginVC: UIViewController {
                         userDefaults.set(json.value(forKey: "address") as! String, forKey: "address")
                         userDefaults.set(json.value(forKey: "customer_id") as! String, forKey: "customerId")
                         userDefaults.set(true, forKey: "login")
-                        userDefaults.synchronize()
-                        
-//                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as? UINavigationController
-//                        self.present(vc!, animated: true, completion: nil)
-                        
+                        userDefaults.synchronize()                        
                         
                         self.goHome()
                         
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: json.value(forKey: "message") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                        
+                        return
                     }
                     
                 }

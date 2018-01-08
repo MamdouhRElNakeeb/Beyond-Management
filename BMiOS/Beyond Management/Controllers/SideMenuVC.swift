@@ -53,7 +53,7 @@ extension SideMenuVC: UITableViewDelegate, UITableViewDataSource {
             badge.text = "1"
             badge.textColor = UIColor.white
             badge.textAlignment = .center
-            cell.contentView.addSubview(badge)
+//            cell.contentView.addSubview(badge)
             cell.backgroundColor = UIColor.clear
             return cell
         case 2:

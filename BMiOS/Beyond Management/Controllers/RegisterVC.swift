@@ -39,8 +39,49 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
         let address = addressTF.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
         let password = passwordTF.text?.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
-        if (name?.isEmpty)! || (email?.isEmpty)! || (phone?.isEmpty)! || (address?.isEmpty)! || (password?.isEmpty)! {
-            print("missing fields")
+        if (name?.isEmpty)!{
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you name", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+            print("missing name")
+            return
+        }
+        if (email?.isEmpty)!{
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you Email", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+            print("missing Email")
+            return
+        }
+        if (phone?.isEmpty)!{
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you phone", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+            print("missing phone")
+            return
+        }
+        if (address?.isEmpty)! {
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you address", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+            print("missing address")
+            return
+        }
+        if (password?.isEmpty)! {
+            
+            let alert = UIAlertController(title: "Error", message: "Please enter you password", preferredStyle: UIAlertControllerStyle.alert)
+            alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+            
+            print("missing password")
             return
         }
         
@@ -49,7 +90,8 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
             "email": email!,
             "phone": phone!,
             "address": address!,
-            "password": password!
+            "password": password!,
+            "token": UserDefaults.standard.string(forKey: "deviceToken") ?? "0"
         ]
         
         print(params)
@@ -80,6 +122,13 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
                         let vc = self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as? UINavigationController
                         self.present(vc!, animated: true, completion: nil)
                         
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: json.value(forKey: "message") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                        
+                        return
                     }
                 
                 }

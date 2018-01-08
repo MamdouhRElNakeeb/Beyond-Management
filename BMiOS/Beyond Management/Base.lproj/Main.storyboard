@@ -776,7 +776,7 @@ We are proud to launch our first APP towards providing legal and immigration ser
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Request a Skype call" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="L7z-wG-rMz">
                                 <rect key="frame" x="84" y="72" width="206" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -788,6 +788,9 @@ We are proud to launch our first APP towards providing legal and immigration ser
                                 <state key="normal" title="$50">
                                     <color key="titleColor" red="0.94901960780000005" green="0.95294117649999999" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
+                                <connections>
+                                    <action selector="skypeBtnOnClick:" destination="or8-Xn-2XJ" eventType="touchUpInside" id="9Dx-0w-Aaa"/>
+                                </connections>
                             </button>
                             <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="xtn-xN-c8p">
                                 <rect key="frame" x="16" y="140" width="343" height="1"/>
@@ -816,6 +819,9 @@ We are proud to launch our first APP towards providing legal and immigration ser
                                 <state key="normal" title="Send">
                                     <color key="titleColor" red="0.94901960780000005" green="0.95294117649999999" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
                                 </state>
+                                <connections>
+                                    <action selector="sendBtnOnClick:" destination="or8-Xn-2XJ" eventType="touchUpInside" id="MSE-ln-qhg"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -830,6 +836,11 @@ We are proud to launch our first APP towards providing legal and immigration ser
                             </connections>
                         </barButtonItem>
                     </navigationItem>
+                    <connections>
+                        <outlet property="msgTV" destination="7Wx-db-DA8" id="hY4-M5-344"/>
+                        <outlet property="sendBtn" destination="rWS-U5-tUm" id="Fza-W8-WzE"/>
+                        <outlet property="skypeBtn" destination="wEh-Hh-QkI" id="jnI-B5-Ou1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9o3-Ue-3Vd" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
@@ -857,16 +868,16 @@ We are proud to launch our first APP towards providing legal and immigration ser
             </objects>
             <point key="canvasLocation" x="1838" y="36"/>
         </scene>
-        <!--Available VISA-->
+        <!--Required Documents-->
         <scene sceneID="vPF-3w-IlQ">
             <objects>
-                <tableViewController storyboardIdentifier="ApplicationsTVC" id="52F-wV-2OV" customClass="ApplicationsTVC" customModule="Beyond_Management" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="V0H-W7-DUa">
+                <tableViewController storyboardIdentifier="RequirementsTVC" id="52F-wV-2OV" customClass="RequirementsTVC" customModule="Beyond_Management" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="V0H-W7-DUa">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.28627450980000002" blue="0.33333333329999998" alpha="1" colorSpace="calibratedRGB"/>
                         <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="visaCell" rowHeight="150" id="9qF-Pn-ZyN" customClass="VisaServicesTVCell" customModule="Beyond_Management" customModuleProvider="target">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="RequirementTVCell" rowHeight="150" id="9qF-Pn-ZyN" customClass="RequirementTVCell" customModule="Beyond_Management" customModuleProvider="target">
                                 <rect key="frame" x="0.0" y="28" width="375" height="150"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="9qF-Pn-ZyN" id="I1E-64-2TY">
@@ -881,22 +892,22 @@ We are proud to launch our first APP towards providing legal and immigration ser
                                                     <rect key="frame" x="8" y="11" width="117" height="112"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" heightSizable="YES"/>
                                                 </imageView>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="VISA B1" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dMu-h3-YhE">
-                                                    <rect key="frame" x="133" y="8" width="155" height="118"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" heightSizable="YES"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Passport" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="dMu-h3-YhE">
+                                                    <rect key="frame" x="133" y="8" width="205" height="118"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" heightSizable="YES"/>
                                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="17"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ElA-ql-pPj">
-                                                    <rect key="frame" x="296" y="57" width="42" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ElA-ql-pPj">
+                                                    <rect key="frame" x="133" y="105" width="199" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMinY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="B0u-9T-VVx">
-                                                    <rect key="frame" x="317" y="8" width="21" height="22"/>
+                                                    <rect key="frame" x="317" y="11" width="21" height="22"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMinX="YES" flexibleMaxY="YES"/>
                                                     <state key="normal" image="share_icn"/>
                                                 </button>
@@ -907,8 +918,11 @@ We are proud to launch our first APP towards providing legal and immigration ser
                                 </tableViewCellContentView>
                                 <color key="backgroundColor" red="0.0" green="0.28627450980000002" blue="0.33333333329999998" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
-                                    <outlet property="visaIV" destination="cq4-iQ-sV3" id="mrf-7t-VWA"/>
-                                    <outlet property="visaLbl" destination="dMu-h3-YhE" id="QbA-wJ-hpV"/>
+                                    <outlet property="docIV" destination="cq4-iQ-sV3" id="ZuI-gX-C4E"/>
+                                    <outlet property="docName" destination="dMu-h3-YhE" id="5xh-V8-r2J"/>
+                                    <outlet property="statusLbl" destination="ElA-ql-pPj" id="ipn-aj-XTf"/>
+                                    <outlet property="uploadBtn" destination="B0u-9T-VVx" id="oVn-ea-00y"/>
+                                    <outlet property="whiteV" destination="qdn-Gj-ZfC" id="bU4-mi-RFG"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
@@ -917,19 +931,19 @@ We are proud to launch our first APP towards providing legal and immigration ser
                             <outlet property="delegate" destination="52F-wV-2OV" id="Em5-x8-QIh"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Available VISA" id="gUK-Yx-iMu">
+                    <navigationItem key="navigationItem" title="Required Documents" id="gUK-Yx-iMu">
                         <barButtonItem key="leftBarButtonItem" image="sideMenu" width="25" id="aOe-dz-UEU">
                             <inset key="imageInsets" minX="0.0" minY="0.0" maxX="5" maxY="5"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <connections>
-                                <segue destination="ITW-nl-ZqD" kind="presentation" id="ekX-se-pmK"/>
+                                <segue destination="ITW-nl-ZqD" kind="presentation" id="Qu3-lp-MAD"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0LY-rg-vwg" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2592.8000000000002" y="783.95802098950526"/>
+            <point key="canvasLocation" x="2605.5999999999999" y="2175.562218890555"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="wpC-Rt-WAy">
@@ -940,6 +954,9 @@ We are proud to launch our first APP towards providing legal and immigration ser
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                         <color key="barTintColor" red="0.0" green="0.28627450980000002" blue="0.33333333329999998" alpha="1" colorSpace="calibratedRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </textAttributes>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -948,7 +965,89 @@ We are proud to launch our first APP towards providing legal and immigration ser
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="YB0-cd-lx3" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2593" y="36"/>
+            <point key="canvasLocation" x="2606" y="1466"/>
+        </scene>
+        <!--Applications-->
+        <scene sceneID="44T-La-ugi">
+            <objects>
+                <tableViewController storyboardIdentifier="ApplicationsTVC" id="sHt-aT-Ux4" customClass="ApplicationsTVC" customModule="Beyond_Management" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="QCz-fS-p3d">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="visaCell" rowHeight="150" id="K6T-rG-Ih5" customClass="VisaServicesTVCell" customModule="Beyond_Management" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="28" width="375" height="150"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="K6T-rG-Ih5" id="f6s-th-ZYi">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="150"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="visa" translatesAutoresizingMaskIntoConstraints="NO" id="ogA-Og-uM3">
+                                            <rect key="frame" x="14" y="5" width="346" height="140"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        </imageView>
+                                        <view alpha="0.55000001192092896" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="t55-xb-KO4">
+                                            <rect key="frame" x="14" y="5" width="346" height="140"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <color key="backgroundColor" red="0.0" green="0.28627450980000002" blue="0.33333333329999998" alpha="1" colorSpace="calibratedRGB"/>
+                                        </view>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="VISA B1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LQe-bV-OTw">
+                                            <rect key="frame" x="14" y="5" width="346" height="140"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                            <fontDescription key="fontDescription" type="system" weight="heavy" pointSize="43"/>
+                                            <color key="textColor" red="0.94901960780000005" green="0.95294117649999999" blue="0.95686274510000002" alpha="1" colorSpace="calibratedRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="visaIV" destination="ogA-Og-uM3" id="bo1-3A-0uc"/>
+                                    <outlet property="visaLbl" destination="LQe-bV-OTw" id="NOt-xz-woI"/>
+                                    <outlet property="visaTintV" destination="t55-xb-KO4" id="cIP-oV-Pc9"/>
+                                </connections>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="sHt-aT-Ux4" id="SxC-38-VPC"/>
+                            <outlet property="delegate" destination="sHt-aT-Ux4" id="izb-cw-Z5r"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" title="Applications" id="5h2-Vh-F5u">
+                        <barButtonItem key="leftBarButtonItem" image="sideMenu" width="25" id="jxh-ae-hSW">
+                            <inset key="imageInsets" minX="0.0" minY="0.0" maxX="5" maxY="5"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <connections>
+                                <segue destination="ITW-nl-ZqD" kind="presentation" id="OHz-sQ-hWf"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="xXn-Wq-zVd" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2607" y="784"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="oRK-XJ-FAj">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Y8o-96-rTT" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="5Qy-Yn-0a7">
+                        <rect key="frame" x="0.0" y="20" width="375" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.0" green="0.28627450980000002" blue="0.33333333329999998" alpha="1" colorSpace="calibratedRGB"/>
+                        <textAttributes key="titleTextAttributes">
+                            <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        </textAttributes>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="sHt-aT-Ux4" kind="relationship" relationship="rootViewController" id="ZMc-Rj-fWT"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hcJ-FC-fnr" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2607" y="36"/>
         </scene>
     </scenes>
     <resources>
@@ -964,6 +1063,6 @@ We are proud to launch our first APP towards providing legal and immigration ser
         <image name="visa" width="512" height="340"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="ekX-se-pmK"/>
+        <segue reference="o7S-6U-pId"/>
     </inferredMetricsTieBreakers>
 </document>

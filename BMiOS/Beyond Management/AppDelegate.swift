@@ -9,6 +9,7 @@
 import UIKit
 import Braintree
 import Firebase
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -19,9 +20,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        BTAppSwitch.setReturnURLScheme("uk.co.ibeyond.app.payments")
+        BTAppSwitch.setReturnURLScheme("org.beyondmanagement.app.payments")
         FirebaseApp.configure()
 //        fetchClientToken()
+        
+        if #available(iOS 10.0, *) {
+            // For iOS 10 display notification (sent via APNS)
+            UNUserNotificationCenter.current().delegate = self
+            
+            let authOptions: UNAuthorizationOptions = [.alert, .badge, .sound]
+            UNUserNotificationCenter.current().requestAuthorization(
+                options: authOptions,
+                completionHandler: {_, _ in })
+        } else {
+            let settings: UIUserNotificationSettings =
+                UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil)
+            application.registerUserNotificationSettings(settings)
+        }
+        
+        UNUserNotificationCenter.current().delegate = self
+        application.registerForRemoteNotifications()
         
         return true
     }
@@ -46,35 +64,163 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ app: UIApplication, open url: URL, options: [UIApplicationOpenURLOptionsKey : Any]) -> Bool {
-        if url.scheme?.localizedCaseInsensitiveCompare("uk.co.ibeyond.app.payments") == .orderedSame {
+        if url.scheme?.localizedCaseInsensitiveCompare("org.beyondmanagement.app.payments") == .orderedSame {
             return BTAppSwitch.handleOpen(url, options: options)
         }
         return false
     }
 
     
-    func applicationWillResignActive(_ application: UIApplication) {
-        // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-        // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+    // [START receive_message]
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any]) {
+        // If you are receiving a notification message while your app is in the background,
+        // this callback will not be fired till the user taps on the notification launching the application.
+        // TODO: Handle data of notification
+        // With swizzling disabled you must let Messaging know about the message, for Analytics
+        // Messaging.messaging().appDidReceiveMessage(userInfo)
+        // Print message ID.
+        
+        
+        
+        // Print full message.
+        print("didReceiveRemoteNotificationn: \(userInfo)")
     }
-
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-        // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let userd = UserDefaults()
+        /*
+         let trimmedToken = deviceToken.description.replacingOccurrences(of: " ", with: "").replacingOccurrences(of: "<", with: "").replacingOccurrences(of: ">", with: "")
+         userd.setValue(trimmedToken, forKey: "deviceToken")
+         print("Did Register for Remote Notifications with Device Token (%@)", deviceToken)
+         */
+        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+        userd.setValue(deviceTokenString, forKey: "deviceToken")
+        
+        print("newToken: \(deviceTokenString)")
+        
+        print(deviceTokenString)
     }
-
-    func applicationWillEnterForeground(_ application: UIApplication) {
-        // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        let center = UNUserNotificationCenter.current()
+        
+        print("didReceiveRemoteNotification: \(userInfo["aps"])")
+        
+        completionHandler(UIBackgroundFetchResult.newData)
+        
+        
+        
+        if let notification = userInfo["aps"] as? NSDictionary,
+            let message = notification["message"] as? String {
+            
+            /*    let notification = UILocalNotification()
+             notification.alertBody = notificationtext
+             notification.alertAction = "open"
+             notification.fireDate = Date(timeIntervalSinceNow: 1)
+             notification.soundName = UILocalNotificationDefaultSoundName
+             //notification.userInfo = message as? [String : AnyObject]
+             //notification.category = message
+             UIApplication.shared.scheduleLocalNotification(notification)
+             */
+            completionHandler(UIBackgroundFetchResult.newData)
+            
+            //if(isMessage(message) && application.applicationState == UIApplicationState.Active) {
+            //    NSNotificationCenter.defaultCenter().postNotificationName("newChatMessage", object: message["entity_id"])
+            //}
+            
+            let content = UNMutableNotificationContent()
+            content.title = "Beyond Management"
+            content.body = message
+            content.sound = UNNotificationSound.default()
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            
+            let identifier = "UYLLocalNotification"
+            let request = UNNotificationRequest(identifier: identifier,
+                                                content: content, trigger: trigger)
+            center.add(request, withCompletionHandler: { (error) in
+                if let error = error {
+                    // Something went wrong
+                    print("notificationsErr: \(error)")
+                }
+            })
+            
+        }
+        
     }
-
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Did Fail to Register for Remote Notifications")
+        let userd = UserDefaults()
+        
+        userd.setValue("0", forKey: "deviceToken")
+        print(error.localizedDescription)
+    }
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        print("App became active")
+        application.applicationIconBadgeNumber = 0;
     }
-
-    func applicationWillTerminate(_ application: UIApplication) {
-        // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
-    }
-
 
 }
 
+// [START ios_10_message_handling]
+@available(iOS 10, *)
+extension AppDelegate : UNUserNotificationCenterDelegate {
+    
+    // Receive displayed notifications for iOS 10 devices.
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        let userInfo = notification.request.content.userInfo
+        
+        // With swizzling disabled you must let Messaging know about the message, for Analytics
+        // Messaging.messaging().appDidReceiveMessage(userInfo)
+        // Print message ID.
+        
+        // Print full message.
+        print("willPresentNoti: \(userInfo["aps"])")
+        print("not: \(notification)")
+        
+        if let notification = userInfo["aps"] as? NSDictionary,
+            let message = notification["message"] as? String {
+            let notificationtext = message
+            print(notificationtext)
+            
+            let content = UNMutableNotificationContent()
+            content.title = "Beyond Management"
+            content.body = notificationtext
+            content.sound = UNNotificationSound.default()
+            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 1, repeats: false)
+            
+            let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+            
+            
+            UNUserNotificationCenter.current().add(request) { (error:Error?) in
+                
+                if error != nil {
+                    print(error ?? "notiErr")
+                }
+                print("Notification Register Success")
+            }
+        }
+        
+        // Change this to your preferred presentation option
+        //completionHandler([])
+        completionHandler([UNNotificationPresentationOptions.alert, UNNotificationPresentationOptions.badge, UNNotificationPresentationOptions.sound])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter,
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
+        let userInfo = response.notification.request.content.userInfo
+        // Print message ID.
+        
+        // Print full message.
+        print("didReciveResponse: \(userInfo)")
+        
+        completionHandler()
+    }
+}
+// [END ios_10_message_handling]

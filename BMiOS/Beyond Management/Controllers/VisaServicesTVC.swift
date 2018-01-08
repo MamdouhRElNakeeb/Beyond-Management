@@ -9,8 +9,6 @@
 import UIKit
 import SideMenu
 import Alamofire
-import BraintreeDropIn
-import Braintree
 
 class VisaServicesTVC: UITableViewController{
 
@@ -113,10 +111,8 @@ class VisaServicesTVC: UITableViewController{
         SideMenuManager.default.menuPresentMode = .viewSlideInOut
         SideMenuManager.default.menuFadeStatusBar = false
         SideMenuManager.default.menuAllowPushOfSameClassTwice = false
-//        SideMenuManager.default.menuAnimationOptions = .curveEaseInOut
         SideMenuManager.default.menuPushStyle = .popWhenPossible
     }
-    
     
 }
 
