@@ -11,15 +11,16 @@ import Braintree
 import BraintreeDropIn
 import Alamofire
 
-class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresentingDelegate  {
+class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresentingDelegate, UITextViewDelegate,
+    PKPaymentAuthorizationViewControllerDelegate{
 
-    
-    
     @IBOutlet weak var skypeBtn: UIButton!
     @IBOutlet weak var msgTV: UITextView!
     @IBOutlet weak var sendBtn: UIButton!
     
     var amount = 50
+    var nonce = ""
+    var cardDetailsVC = CardDetailsTVC()
     
     var skypeIV = UIImageView()
     var skypeLbl = UILabel()
@@ -45,11 +46,91 @@ class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresenti
         
 //        initSkype()
 //        initMsgView()
+        msgTV.delegate = self
         
         fetchClientToken()
+        configApplePay()
     }
 
+    @IBAction func sideMenuAction(_ sender: Any) {
+        
+        self.sideMenuController?.toggle()
+        
+    }
+    
     // Payment
+    /** Apple Pay**/
+    func configApplePay(){
+        // Conditionally show Apple Pay button based on device availability
+        PKPaymentAuthorizationViewController
+            .canMakePayments(usingNetworks: [PKPaymentNetwork.visa,
+                                             PKPaymentNetwork.masterCard,
+                                             PKPaymentNetwork.quicPay])
+        
+    }
+    
+    func paymentRequest() -> PKPaymentRequest {
+        let paymentRequest = PKPaymentRequest()
+        paymentRequest.merchantIdentifier = "merchant.org.beyondmanagement.app"
+        paymentRequest.supportedNetworks = [PKPaymentNetwork.amex, PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
+        paymentRequest.merchantCapabilities = PKMerchantCapability.capability3DS
+        paymentRequest.countryCode = "US"; // e.g. US
+        paymentRequest.currencyCode = "USD"; // e.g. USD
+        
+        return paymentRequest
+    }
+    
+    func payWithApplePay(_ itemName: String, _ amount: String) {
+        let paymentRequest = self.paymentRequest()
+        paymentRequest.paymentSummaryItems = [
+            PKPaymentSummaryItem(label: itemName, amount: NSDecimalNumber(string: amount))
+        ]
+        // Example: Promote PKPaymentAuthorizationViewController to optional so that we can verify
+        // that our paymentRequest is valid. Otherwise, an invalid paymentRequest would crash our app.
+        if let vc = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
+            as PKPaymentAuthorizationViewController?
+        {
+            print("applePay present")
+            vc.delegate = self
+            definesPresentationContext = true
+            self.present(vc, animated: true, completion: nil)
+        } else {
+            print("Error: Payment request is invalid.")
+        }
+    }
+    
+    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController,
+                                            didAuthorizePayment payment: PKPayment, completion: @escaping (PKPaymentAuthorizationStatus) -> Void) {
+        
+        // Example: Tokenize the Apple Pay payment
+        let applePayClient = BTApplePayClient(apiClient: braintreeClient!)
+        applePayClient.tokenizeApplePay(payment) {
+            (tokenizedApplePayPayment, error) in
+            guard let tokenizedApplePayPayment = tokenizedApplePayPayment else {
+                // Tokenization failed. Check `error` for the cause of the failure.
+                
+                // Indicate failure via completion callback.
+                completion(PKPaymentAuthorizationStatus.failure)
+                
+                return
+            }
+            
+            // Received a tokenized Apple Pay payment from Braintree.
+            // If applicable, address information is accessible in `payment`.
+            
+            // Send the nonce to your server for processing.
+            print("nonce = \(tokenizedApplePayPayment.nonce)")
+            self.postNonceToServerVault(tokenizedApplePayPayment.nonce, self.amount)
+            
+            // Then indicate success or failure via the completion callback, e.g.
+            completion(PKPaymentAuthorizationStatus.success)
+        }
+    }
+    /** Apple Pay **/
     func showDropIn(clientTokenOrTokenizationKey: String, amount: Int) {
         
         indicator.startAnimating()
@@ -80,7 +161,25 @@ class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresenti
                 
                 print(result.paymentMethod?.nonce ?? "")
                 
-                self.postNonceToServerVault((result.paymentMethod?.nonce ?? ""), amount)
+                self.definesPresentationContext = false
+                self.nonce = (result.paymentMethod?.nonce ?? "")
+                
+                if result.paymentOptionType == BTUIKPaymentOptionType.applePay{
+                    print("pay with apple pay")
+                    self.payWithApplePay("Skype", "\(amount)")
+                }
+                else if result.paymentOptionType == BTUIKPaymentOptionType.visa{
+                    print("pay with visa")
+                    
+                    self.cardDetailsVC = self.storyboard?.instantiateViewController(withIdentifier: "CardDetailsTVC") as! CardDetailsTVC
+                    self.cardDetailsVC.cardDetailsDelegate = self
+                    self.cardDetailsVC.skype = true
+                    
+                    self.present(self.cardDetailsVC, animated: true, completion: nil)
+                }
+                else{
+                    self.postNonceToServerVault((result.paymentMethod?.nonce ?? ""), amount)
+                }
             }
             controller.dismiss(animated: true, completion: nil)
         }
@@ -153,9 +252,77 @@ class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresenti
         
     }
     
+    func postVisaNonceToServerVault(_ paymentMethodNonce: String, _ amount: Int, cardHolder: String, cvv: String, billingAddress: String) {
+        
+        indicator.startAnimating()
+        //let dataCollector = BTDataCollector(environment: .Sandbox)
+        //let deviceData = dataCollector.collectCardFraudData()
+        
+        let deviceData = PPDataCollector.collectPayPalDeviceData()
+        let customerId = UserDefaults().string(forKey: "customerId")!
+        print("postNonceToServerVault deviceData: \(deviceData)")
+        
+        let params: Parameters = [
+            "payment_method_nonce": paymentMethodNonce,
+            "customerId": customerId,
+            "amount": "\(amount)",
+            "cardHolder": cardHolder,
+            "cvv": cvv,
+            "billingAdd": billingAddress
+        ]
+        
+        print(params)
+        
+        Alamofire.request(Urls.PAY_SKYPE, method: .post, parameters: params).responseJSON{
+            
+            response in
+            
+            print(response)
+            
+            if let result = response.result.value {
+                
+                let json = result as! NSDictionary
+                
+                if let success = json.value(forKey: "paySuccess") as? Bool{
+                    
+                    if success{
+                        let alert = UIAlertController(title: "Success", message: "Thank you, Your request have been submitted.\n You will be contacted for more details.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: json.value(forKey: "payError") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Try Again", style: UIAlertActionStyle.destructive, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    
+                }
+                else if let success = json.value(forKey: "methodSuccess") as? Bool{
+                    
+                    if success{
+                        let alert = UIAlertController(title: "Success", message: "Your payment method have been added.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: json.value(forKey: "methodError") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Try Again", style: UIAlertActionStyle.destructive, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    
+                }
+                
+                
+            }
+            
+            self.indicator.stopAnimating()
+        }
+        
+    }
     
     func fetchClientToken(){
         
+        indicator.startAnimating()
         let parameters: Parameters = [
             "customerId": UserDefaults().string(forKey: "customerId")!
         ]
@@ -167,12 +334,15 @@ class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresenti
                 
                 response in
                 
+                self.indicator.stopAnimating()
+                
                 print(response)
                 
                 if let result = response.result.value {
                     
                     let json = result as! NSDictionary
                     self.clientToken = json.value(forKey: "token") as! String
+                    self.braintreeClient = BTAPIClient(authorization: self.clientToken)
                     
                 }
         }
@@ -236,6 +406,7 @@ class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresenti
                     if let success = json.value(forKey: "success") as? Bool{
                         
                         if success{
+                            self.msgTV.text = "Your message here"
                             let alert = UIAlertController(title: "Success", message: "Thank you, Your message have been sent.\n You will be contacted fore more details.", preferredStyle: UIAlertControllerStyle.alert)
                             alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
                             self.present(alert, animated: true, completion: nil)
@@ -307,6 +478,72 @@ class ContactVC: UIViewController, BTAppSwitchDelegate, BTViewControllerPresenti
         self.view.addSubview(sendMsgLbl)
         self.view.addSubview(sendBtn)
         
+    }
+    
+    func textViewDidBeginEditing(_ textView: UITextView) {
+        if textView == msgTV {
+            if msgTV.text == "Your message here" {
+                msgTV.text = ""
+                msgTV.textColor = UIColor.black
+            }
+        }
+        let myScreenRect: CGRect = UIScreen.main.bounds
+        let keyboardHeight : CGFloat = 80
         
+        UIView.beginAnimations( "animateView", context: nil)
+        var needToMove: CGFloat = 30
+        
+        var frame : CGRect = self.view.frame
+        if ((textView.frame.origin.y + textView.frame.size.height + 100) >  (myScreenRect.size.height - keyboardHeight)) {
+            needToMove = textView.frame.height + keyboardHeight
+        }
+        
+        frame.origin.y = -needToMove
+        if (UIDevice.current.model == "iPhone") {
+            self.view.frame = frame
+            UIView.commitAnimations()
+        }
+    }
+    
+    func textViewDidEndEditing(_ textView: UITextView) {
+        if textView == msgTV {
+            if msgTV.text == "" {
+                msgTV.text = "Your message here"
+                msgTV.textColor = UIColor.gray
+            }
+        }
+        UIView.beginAnimations( "animateView", context: nil)
+        var frame : CGRect = self.view.frame
+        frame.origin.y = 0
+        if (UIDevice.current.model == "iPhone") {
+            self.view.frame = frame
+            UIView.commitAnimations()
+        }
+    }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        self.view.endEditing(true)
+    }
+    
+    func hideKeyboard(_ recognizer: UIGestureRecognizer){
+        view.endEditing(true)
     }
 }
+
+extension ContactVC: CardDetailsDelegate{
+    
+    func cardDetailsWithSeek(name: String, cvv: String, strAddress: String, city: String, state: String, zipCode: String, country: String, seekFor: String) {
+        
+    }
+    
+    func cardDetails(name: String, cvv: String, strAddress: String, city: String, state: String, zipCode: String, country: String) {
+        
+        cardDetailsVC.dismiss(animated: true, completion: nil)
+        let address = strAddress + ", " + city + ", " + state + ", " + zipCode + ", " + country
+        self.postVisaNonceToServerVault(nonce, amount, cardHolder: name, cvv: cvv, billingAddress: address)
+        
+    }
+    
+}
+
+

@@ -29,12 +29,20 @@ class ApplicationsTVC: UITableViewController {
         getApps()
     }
 
+    @IBAction func sideMenuAction(_ sender: Any) {
+        
+        self.sideMenuController?.toggle()
+        
+    }
+    
     func getApps (){
         
+        indicator.startAnimating()
         let params: Parameters = [
             "applicant_id": UserDefaults.standard.integer(forKey: "id")
         ]
         
+        appsArr.removeAll()
         Alamofire.request(Urls.USER_APPS, method: .post, parameters: params).responseJSON{
             
             response in
@@ -56,6 +64,8 @@ class ApplicationsTVC: UITableViewController {
                 
                 self.tableView.reloadData()
             }
+            
+            self.indicator.stopAnimating()
         }
     }
     
@@ -85,12 +95,16 @@ class ApplicationsTVC: UITableViewController {
         let app = appsArr[indexPath.row]
         
         
-        let attributedAppName = NSMutableAttributedString(string: app.visa, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 35, weight: UIFont.Weight.heavy), NSAttributedStringKey.foregroundColor : UIColor.white])
+        let attributedAppName = NSMutableAttributedString(string: app.visa,
+                                                          attributes: [NSFontAttributeName : UIFont.systemFont(ofSize: 35, weight: UIFontWeightHeavy),
+                                                                        NSForegroundColorAttributeName : UIColor.white])
         
 
-        let attributedAppType = NSMutableAttributedString(string: app.type, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 20, weight: UIFont.Weight.regular), NSAttributedStringKey.foregroundColor : UIColor.white])
+        let attributedAppType = NSMutableAttributedString(string: app.type, attributes: [ NSFontAttributeName : UIFont.systemFont(ofSize: 20, weight: UIFontWeightRegular),
+                                                                                          NSForegroundColorAttributeName : UIColor.white])
         
-        let attributedAppStatus = NSMutableAttributedString(string: app.status, attributes: [NSAttributedStringKey.font : UIFont.systemFont(ofSize: 15, weight: UIFont.Weight.ultraLight), NSAttributedStringKey.foregroundColor : UIColor.white])
+        let attributedAppStatus = NSMutableAttributedString(string: app.status, attributes: [ NSFontAttributeName : UIFont.systemFont(ofSize: 15, weight: UIFontWeightUltraLight),
+                                                                                              NSForegroundColorAttributeName : UIColor.white])
         
         attributedAppName.append(NSMutableAttributedString(string: "\n \n"))
         attributedAppName.append(attributedAppType)

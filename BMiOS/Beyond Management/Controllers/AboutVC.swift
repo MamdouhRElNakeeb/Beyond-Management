@@ -16,4 +16,10 @@ class AboutVC: UIViewController {
         // Do any additional setup after loading the view.
     }
 
+    @IBAction func sideMenuAction(_ sender: Any) {
+        
+        self.sideMenuController?.toggle()
+        
+    }
+    
 }

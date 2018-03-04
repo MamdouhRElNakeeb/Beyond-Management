@@ -10,6 +10,7 @@ import UIKit
 import Braintree
 import Firebase
 import UserNotifications
+import SideMenuController
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -41,9 +42,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         UNUserNotificationCenter.current().delegate = self
         application.registerForRemoteNotifications()
         
+        configSideMenu()
+        
         return true
     }
     
+    func configSideMenu(){
+//        SideMenuController.preferences.drawing.menuButtonImage = UIImage(named: "sideMenu")
+        SideMenuController.preferences.drawing.sidePanelPosition = .underCenterPanelLeft
+        SideMenuController.preferences.drawing.sidePanelWidth = 250
+        SideMenuController.preferences.drawing.centerPanelShadow = true
+        SideMenuController.preferences.animating.statusBarBehaviour = .showUnderlay
+    }
     
     
     func fetchClientToken() {

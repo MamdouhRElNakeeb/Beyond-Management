@@ -12,6 +12,7 @@ class SideMenuVC: UIViewController {
 
     var menuTV = UITableView()
     var bmgIV = UIImageView()
+    var bmgLbl = UILabel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,8 +28,14 @@ class SideMenuVC: UIViewController {
         bmgIV.image = UIImage(named: "logo")
         bmgIV.contentMode = .scaleAspectFit
         
+        bmgLbl.frame = CGRect(x: menuTV.frame.minX, y: bmgIV.frame.maxY - 15, width: menuTV.frame.width, height: 60)
+        bmgLbl.text = "Immigration Portal"
+        bmgLbl.font = UIFont.boldSystemFont(ofSize: 20)
+        bmgLbl.textAlignment = .center
+        
         view.addSubview(menuTV)
         view.addSubview(bmgIV)
+        view.addSubview(bmgLbl)
     }
 }
 
@@ -44,7 +51,7 @@ extension SideMenuVC: UITableViewDelegate, UITableViewDataSource {
             return cell
         case 1:
             let cell = UITableViewCell()
-            cell.textLabel?.text = "Applications"
+            cell.textLabel?.text = "My Applications"
             let badge = UILabel()
             badge.frame = CGRect(x: menuTV.frame.width - 50, y: 10, width: 30, height: 30)
             badge.backgroundColor = UIColor.red
@@ -85,29 +92,35 @@ extension SideMenuVC: UITableViewDelegate, UITableViewDataSource {
         
         switch indexPath.row {
         case 0:
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: "VisaServicesTVC") as? VisaServicesTVC
-            self.navigationController?.pushViewController(vc!, animated: true)
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as? UINavigationController
+//            self.navigationController?.pushViewController(vc!, animated: true)
+            sideMenuController?.embed(centerViewController: vc!)
             break
             
         case 1:
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: "ApplicationsTVC") as? ApplicationsTVC
-            self.navigationController?.pushViewController(vc!, animated: true)
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "ApplicationsNC") as? UINavigationController
+//            self.navigationController?.pushViewController(vc!, animated: true)
+            
+            sideMenuController?.embed(centerViewController: vc!)
             break
             
         case 2:
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: "AboutVC") as? AboutVC
-            self.navigationController?.pushViewController(vc!, animated: true)
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "AboutNC") as? UINavigationController
+//            self.navigationController?.pushViewController(vc!, animated: true)
+            sideMenuController?.embed(centerViewController: vc!)
             break
             
         case 3:
-            let vc = self.storyboard?.instantiateViewController(withIdentifier: "ContactVC") as? ContactVC
-            self.navigationController?.pushViewController(vc!, animated: true)
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "ContactNC") as? UINavigationController
+//            self.navigationController?.pushViewController(vc!, animated: true)
+            sideMenuController?.embed(centerViewController: vc!)
             break
         
         default:
             UserDefaults.standard.set(false, forKey: "login")
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "loginVC") as? LoginVC
-            self.present(vc!, animated: true, completion: nil)
+//            self.present(vc!, animated: true, completion: nil)
+            sideMenuController?.embed(centerViewController: vc!)
             break
         }
     }

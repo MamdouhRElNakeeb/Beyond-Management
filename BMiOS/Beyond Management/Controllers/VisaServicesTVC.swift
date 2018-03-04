@@ -9,30 +9,37 @@
 import UIKit
 import SideMenu
 import Alamofire
+import SideMenuController
 
 class VisaServicesTVC: UITableViewController{
-
+    
     var visaArr = Array<Visa>()
     
+    let indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        setupSideMenu()
+//        setupSideMenu()
+    
+        let barBtnItem = UIBarButtonItem(customView: indicator)
+        self.navigationItem.rightBarButtonItem = barBtnItem
+        
         getVisa()
         
 //        showDropIn(clientTokenOrTokenizationKey: clientToken)
 //        startCheckout()
     }
 
+    @IBAction func sideMenuAction(_ sender: Any) {
+        
+        self.sideMenuController?.toggle()
+        
+    }
     
     func getVisa (){
         
-//        visaArr.append(Visa.init(id: 0, name: "VISA B1", imgUrl: "", info: "Test Info", basicPrice: 0, basicInfo: "", interPrice: 0, interInfo: "", advPrice: 0, advInfo: ""))
-//
-//        visaArr.append(Visa.init(id: 0, name: "VISA B1", imgUrl: "", info: "Test Info", basicPrice: 0, basicInfo: "", interPrice: 0, interInfo: "", advPrice: 0, advInfo: ""))
-//
-//        visaArr.append(Visa.init(id: 0, name: "VISA B1", imgUrl: "", info: "Test Info", basicPrice: 0, basicInfo: "", interPrice: 0, interInfo: "", advPrice: 0, advInfo: ""))
+        indicator.startAnimating()
         
         Alamofire.request(Urls.VISA_SERVICES, method: .get).responseJSON{
             
@@ -60,6 +67,8 @@ class VisaServicesTVC: UITableViewController{
                 
                 self.tableView.reloadData()
             }
+            
+            self.indicator.stopAnimating()
         }
     }
     

@@ -18,12 +18,16 @@
 		332D18EB1FEA257B00AFE3A5 /* ContactVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332D18EA1FEA257B00AFE3A5 /* ContactVC.swift */; };
 		332D18EE1FEA3D2500AFE3A5 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 332D18ED1FEA3CDE00AFE3A5 /* GoogleService-Info.plist */; };
 		332D18F01FEA40E800AFE3A5 /* ApplicationsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 332D18EF1FEA40E800AFE3A5 /* ApplicationsTVC.swift */; };
+		334043D020287DBD00E0FFC5 /* CardDetailsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334043CF20287DBD00E0FFC5 /* CardDetailsVC.swift */; };
 		3366E3331FD763240009B7AC /* Urls.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3366E3321FD763240009B7AC /* Urls.swift */; };
 		3397B3C71FD6870E00351A26 /* RegisterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3C61FD6870E00351A26 /* RegisterVC.swift */; };
 		3397B3CA1FD6896A00351A26 /* VisaServicesTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3C91FD6896A00351A26 /* VisaServicesTVC.swift */; };
 		3397B3CD1FD68B6400351A26 /* VisaServicesTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3CC1FD68B6400351A26 /* VisaServicesTVCell.swift */; };
 		3397B3D01FD68E3300351A26 /* Visa.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3397B3CF1FD68E3300351A26 /* Visa.swift */; };
+		33A7C5B52044212F008FCF82 /* CardDetailsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A7C5B42044212F008FCF82 /* CardDetailsTVC.swift */; };
+		33A7C5B7204441D9008FCF82 /* MoreInfoTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A7C5B6204441D9008FCF82 /* MoreInfoTVC.swift */; };
 		33AE771F1FDA4DCE00BE0228 /* VisaOptionsTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33AE771E1FDA4DCE00BE0228 /* VisaOptionsTVC.swift */; };
+		33E5C46B2029EEB40073998E /* RegisterTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33E5C46A2029EEB40073998E /* RegisterTVC.swift */; };
 		33F74FBB1FD232BC0087472F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F74FBA1FD232BC0087472F /* AppDelegate.swift */; };
 		33F74FBD1FD232BC0087472F /* LoginVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F74FBC1FD232BC0087472F /* LoginVC.swift */; };
 		33F74FC01FD232BC0087472F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 33F74FBE1FD232BC0087472F /* Main.storyboard */; };
@@ -43,14 +47,18 @@
 		332D18E81FEA256900AFE3A5 /* AboutVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutVC.swift; sourceTree = "<group>"; };
 		332D18EA1FEA257B00AFE3A5 /* ContactVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactVC.swift; sourceTree = "<group>"; };
 		332D18ED1FEA3CDE00AFE3A5 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		332D18EF1FEA40E800AFE3A5 /* ApplicationsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationsTVC.swift; sourceTree = "<group>"; };
+		332D18EF1FEA40E800AFE3A5 /* ApplicationsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ApplicationsTVC.swift; sourceTree = "<group>"; wrapsLines = 0; };
+		334043CF20287DBD00E0FFC5 /* CardDetailsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailsVC.swift; sourceTree = "<group>"; };
 		3366E3321FD763240009B7AC /* Urls.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Urls.swift; sourceTree = "<group>"; };
 		338C2AF420002668009A4626 /* Beyond Management.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "Beyond Management.entitlements"; sourceTree = "<group>"; };
 		3397B3C61FD6870E00351A26 /* RegisterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterVC.swift; sourceTree = "<group>"; };
 		3397B3C91FD6896A00351A26 /* VisaServicesTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisaServicesTVC.swift; sourceTree = "<group>"; };
 		3397B3CC1FD68B6400351A26 /* VisaServicesTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisaServicesTVCell.swift; sourceTree = "<group>"; };
 		3397B3CF1FD68E3300351A26 /* Visa.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Visa.swift; sourceTree = "<group>"; };
+		33A7C5B42044212F008FCF82 /* CardDetailsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardDetailsTVC.swift; sourceTree = "<group>"; };
+		33A7C5B6204441D9008FCF82 /* MoreInfoTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreInfoTVC.swift; sourceTree = "<group>"; };
 		33AE771E1FDA4DCE00BE0228 /* VisaOptionsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisaOptionsTVC.swift; sourceTree = "<group>"; };
+		33E5C46A2029EEB40073998E /* RegisterTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegisterTVC.swift; sourceTree = "<group>"; };
 		33F74FB71FD232BC0087472F /* Beyond Management.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Beyond Management.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		33F74FBA1FD232BC0087472F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		33F74FBC1FD232BC0087472F /* LoginVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginVC.swift; sourceTree = "<group>"; };
@@ -96,16 +104,20 @@
 		3397B3C81FD6871500351A26 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				332D18E61FEA021E00AFE3A5 /* SideMenuVC.swift */,
 				332D18E41FE9DA7200AFE3A5 /* SplashVC.swift */,
 				33F74FBC1FD232BC0087472F /* LoginVC.swift */,
 				3397B3C61FD6870E00351A26 /* RegisterVC.swift */,
+				33E5C46A2029EEB40073998E /* RegisterTVC.swift */,
 				3397B3C91FD6896A00351A26 /* VisaServicesTVC.swift */,
 				33AE771E1FDA4DCE00BE0228 /* VisaOptionsTVC.swift */,
-				332D18E61FEA021E00AFE3A5 /* SideMenuVC.swift */,
 				332D18EF1FEA40E800AFE3A5 /* ApplicationsTVC.swift */,
 				3309FFA7200041E2006D254F /* RequirementsTVC.swift */,
 				332D18E81FEA256900AFE3A5 /* AboutVC.swift */,
 				332D18EA1FEA257B00AFE3A5 /* ContactVC.swift */,
+				334043CF20287DBD00E0FFC5 /* CardDetailsVC.swift */,
+				33A7C5B42044212F008FCF82 /* CardDetailsTVC.swift */,
+				33A7C5B6204441D9008FCF82 /* MoreInfoTVC.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -211,6 +223,9 @@
 						CreatedOnToolsVersion = 9.0;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
+							com.apple.ApplePay = {
+								enabled = 0;
+							};
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
@@ -285,6 +300,7 @@
 				"${BUILT_PRODUCTS_DIR}/GoogleToolboxForMac/GoogleToolboxForMac.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
 				"${BUILT_PRODUCTS_DIR}/SideMenu/SideMenu.framework",
+				"${BUILT_PRODUCTS_DIR}/SideMenuController/SideMenuController.framework",
 				"${BUILT_PRODUCTS_DIR}/libwebp/libwebp.framework",
 				"${BUILT_PRODUCTS_DIR}/nanopb/nanopb.framework",
 			);
@@ -296,6 +312,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleToolboxForMac.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SideMenu.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SideMenuController.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/libwebp.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/nanopb.framework",
 			);
@@ -347,14 +364,18 @@
 				332D18E51FE9DA7200AFE3A5 /* SplashVC.swift in Sources */,
 				332D18F01FEA40E800AFE3A5 /* ApplicationsTVC.swift in Sources */,
 				332D18E31FE9D3EB00AFE3A5 /* Extensions.swift in Sources */,
+				33A7C5B52044212F008FCF82 /* CardDetailsTVC.swift in Sources */,
 				3397B3CA1FD6896A00351A26 /* VisaServicesTVC.swift in Sources */,
 				3397B3C71FD6870E00351A26 /* RegisterVC.swift in Sources */,
 				33AE771F1FDA4DCE00BE0228 /* VisaOptionsTVC.swift in Sources */,
 				3397B3CD1FD68B6400351A26 /* VisaServicesTVCell.swift in Sources */,
+				334043D020287DBD00E0FFC5 /* CardDetailsVC.swift in Sources */,
 				3309FFAA20004277006D254F /* RequirementTVCell.swift in Sources */,
+				33A7C5B7204441D9008FCF82 /* MoreInfoTVC.swift in Sources */,
 				33F74FBD1FD232BC0087472F /* LoginVC.swift in Sources */,
 				332D18E91FEA256900AFE3A5 /* AboutVC.swift in Sources */,
 				332D18EB1FEA257B00AFE3A5 /* ContactVC.swift in Sources */,
+				33E5C46B2029EEB40073998E /* RegisterTVC.swift in Sources */,
 				3309FFA220003747006D254F /* ImmigrationApplication.swift in Sources */,
 				3366E3331FD763240009B7AC /* Urls.swift in Sources */,
 				3309FFA6200041BC006D254F /* Requirement.swift in Sources */,
@@ -509,7 +530,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -530,7 +551,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				SWIFT_VERSION = 4.0;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

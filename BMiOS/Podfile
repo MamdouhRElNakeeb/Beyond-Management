@@ -12,6 +12,7 @@ pod 'BraintreeDropIn'
 pod 'Braintree/PayPal'
 pod 'Braintree/Apple-Pay'
 pod 'SideMenu'
+pod 'SideMenuController'
 
 pod 'Firebase/Core'
 pod 'Fabric', '~> 1.7.2'

@@ -8,6 +8,7 @@
 
 import UIKit
 import Alamofire
+import SideMenuController
 
 class RegisterVC: UIViewController, UITextFieldDelegate {
 
@@ -41,7 +42,7 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
 
         if (name?.isEmpty)!{
             
-            let alert = UIAlertController(title: "Error", message: "Please enter you name", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Error", message: "Please enter your name", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
             
@@ -50,7 +51,7 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
         }
         if (email?.isEmpty)!{
             
-            let alert = UIAlertController(title: "Error", message: "Please enter you Email", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Error", message: "Please enter your Email", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
             
@@ -59,7 +60,7 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
         }
         if (phone?.isEmpty)!{
             
-            let alert = UIAlertController(title: "Error", message: "Please enter you phone", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Error", message: "Please enter your phone", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
             
@@ -68,7 +69,7 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
         }
         if (address?.isEmpty)! {
             
-            let alert = UIAlertController(title: "Error", message: "Please enter you address", preferredStyle: UIAlertControllerStyle.alert)
+            let alert = UIAlertController(title: "Error", message: "Please enter your complete address", preferredStyle: UIAlertControllerStyle.alert)
             alert.addAction(UIAlertAction(title: "Try again", style: UIAlertActionStyle.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
             
@@ -119,9 +120,19 @@ class RegisterVC: UIViewController, UITextFieldDelegate {
                         userDefaults.set(true, forKey: "login")
                         userDefaults.synchronize()
                         
-                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as? UINavigationController
-                        self.present(vc!, animated: true, completion: nil)
+//                        let vc = self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as? UINavigationController
+//                        self.present(vc!, animated: true, completion: nil)
+
+                        let mainVC =  self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as! UINavigationController
+                        //            self.present(mainVC, animated: true, completion: nil)
                         
+                        let sideMenuVC =  self.storyboard?.instantiateViewController(withIdentifier: "sideMenuVC") as! SideMenuVC
+                        let sideMenuViewController = SideMenuController()
+                        // embed the side and center controllers
+                        sideMenuViewController.embed(sideViewController: sideMenuVC)
+                        sideMenuViewController.embed(centerViewController: mainVC)
+                        
+                        self.show(sideMenuViewController, sender: nil)
                     }
                     else {
                         let alert = UIAlertController(title: "Error", message: json.value(forKey: "message") as? String, preferredStyle: UIAlertControllerStyle.alert)

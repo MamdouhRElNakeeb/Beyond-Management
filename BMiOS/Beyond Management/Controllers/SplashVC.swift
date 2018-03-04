@@ -7,11 +7,12 @@
 //
 
 import UIKit
+import SideMenuController
 import Crashlytics
 
 class SplashVC: UIViewController {
 
-    var count : Int = 2
+    var count : Int = 4
 
     @IBOutlet weak var progressV: UIProgressView!
     
@@ -36,8 +37,17 @@ class SplashVC: UIViewController {
     func showVC()  {
         if UserDefaults.standard.bool(forKey: "login") {
             
+            
             let mainVC =  self.storyboard?.instantiateViewController(withIdentifier: "homeNC") as! UINavigationController
-            self.present(mainVC, animated: true, completion: nil)
+//            self.present(mainVC, animated: true, completion: nil)
+            
+            let sideMenuVC =  self.storyboard?.instantiateViewController(withIdentifier: "sideMenuVC") as! SideMenuVC
+            let sideMenuViewController = SideMenuController()
+            // embed the side and center controllers
+            sideMenuViewController.embed(sideViewController: sideMenuVC)
+            sideMenuViewController.embed(centerViewController: mainVC)
+            
+            show(sideMenuViewController, sender: nil)
             
         }
         else{

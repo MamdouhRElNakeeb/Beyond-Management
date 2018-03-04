@@ -10,8 +10,10 @@ import UIKit
 import Alamofire
 import Braintree
 import BraintreeDropIn
+import PassKit
 
-class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControllerPresentingDelegate {
+class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControllerPresentingDelegate, PKPaymentAuthorizationViewControllerDelegate {
+    
     
     @IBOutlet weak var infoTV: UITextView!
     @IBOutlet weak var basicLbl: UILabel!
@@ -24,15 +26,23 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
     @IBOutlet weak var advInfoTV: UITextView!
     @IBOutlet weak var advPayBtn: UIButton!
     
+    var seekForTV = UITextView()
+    var seekForAC = UIAlertController()
+    var cardDetailsVC = CardDetailsTVC()
+    var moreInfoTVC = MoreInfoTVC()
+    
     var visa = Visa()
     var visaType = ""
+    var visaPrice = 0
+    var nonce = ""
+    var seekFor = ""
     
     var expanded = Array<Int>()
     
     let indicator = UIActivityIndicatorView(activityIndicatorStyle: UIActivityIndicatorViewStyle.white)
     
-    
     var braintreeClient: BTAPIClient!
+    var paymentMethodIndex = 0
     
     var clientToken = ""
     
@@ -61,42 +71,163 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
         advInfoTV.frame = CGRect(x: 8, y: 46, width: self.view.frame.width - 16, height: 0)
         advPayBtn.setTitle("$\(visa.advPrice)", for: .normal)
         advPayBtn.layer.cornerRadius = 10
-        
+    
         fetchClientToken()
+        
+        configApplePay()
     }
+    
+    func configApplePay(){
+        // Conditionally show Apple Pay button based on device availability
+        PKPaymentAuthorizationViewController
+            .canMakePayments(usingNetworks: [PKPaymentNetwork.visa,
+                                             PKPaymentNetwork.masterCard,
+                                             PKPaymentNetwork.quicPay])
+        
+    }
+    
+    func paymentRequest() -> PKPaymentRequest {
+        let paymentRequest = PKPaymentRequest()
+        paymentRequest.merchantIdentifier = "merchant.org.beyondmanagement.app"
+        paymentRequest.supportedNetworks = [PKPaymentNetwork.amex, PKPaymentNetwork.visa, PKPaymentNetwork.masterCard]
+        paymentRequest.merchantCapabilities = PKMerchantCapability.capability3DS
+        paymentRequest.countryCode = "US"; // e.g. US
+        paymentRequest.currencyCode = "USD"; // e.g. USD
+        
+        return paymentRequest
+    }
+    
+    func payWithApplePay(_ itemName: String, _ amount: String) {
+        let paymentRequest = self.paymentRequest()
+        paymentRequest.paymentSummaryItems = [
+            PKPaymentSummaryItem(label: itemName, amount: NSDecimalNumber(string: amount))
+        ]
+        // Example: Promote PKPaymentAuthorizationViewController to optional so that we can verify
+        // that our paymentRequest is valid. Otherwise, an invalid paymentRequest would crash our app.
+        if let vc = PKPaymentAuthorizationViewController(paymentRequest: paymentRequest)
+            as PKPaymentAuthorizationViewController?
+        {
+            print("applePay present")
+            
+            self.definesPresentationContext = true
+            vc.delegate = self
+            self.present(vc, animated: true, completion: nil)
+        } else {
+            print("Error: Payment request is invalid.")
+        }
+    }
+    
+    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController,
+                                            didAuthorizePayment payment: PKPayment, completion: @escaping (PKPaymentAuthorizationStatus) -> Void) {
+        
+        // Example: Tokenize the Apple Pay payment
+        let applePayClient = BTApplePayClient(apiClient: braintreeClient!)
+        applePayClient.tokenizeApplePay(payment) {
+            (tokenizedApplePayPayment, error) in
+            guard let tokenizedApplePayPayment = tokenizedApplePayPayment else {
+                // Tokenization failed. Check `error` for the cause of the failure.
+                
+                // Indicate failure via completion callback.
+                completion(PKPaymentAuthorizationStatus.failure)
+                
+                return
+            }
+            
+            // Received a tokenized Apple Pay payment from Braintree.
+            // If applicable, address information is accessible in `payment`.
+            
+            // Send the nonce to your server for processing.
+            print("nonce = \(tokenizedApplePayPayment.nonce)")
+            self.postNonceToServerVault(tokenizedApplePayPayment.nonce, self.visaPrice, self.seekFor)
+            
+            // Then indicate success or failure via the completion callback, e.g.
+            completion(PKPaymentAuthorizationStatus.success)
+        }
+    }
+
     
     @IBAction func basicPayBtnOnClick(_ sender: UIButton) {
         visaType = "basic"
+        visaPrice = visa.basicPrice
         if clientToken.isEmpty{
             fetchClientToken()
         }
-        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visa.basicPrice)
+        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visaPrice)
     }
     
     @IBAction func interPayBtnOnClick(_ sender: UIButton) {
         visaType = "intermediate"
+        visaPrice = visa.interPrice
         if clientToken.isEmpty{
             fetchClientToken()
         }
-        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visa.interPrice)
+        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visaPrice)
     }
     
     @IBAction func advPayBtnOnClick(_ sender: UIButton) {
         visaType = "advanced"
+        visaPrice = visa.advPrice
         if clientToken.isEmpty{
             fetchClientToken()
         }
-        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visa.advPrice)
+        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visaPrice)
     }
     
+//    func showAlert() {
+//
+//        self.seekForAC = UIAlertController(title: "What are you seeking for?", message: "", preferredStyle: .alert)
+//        self.seekForAC.addAction(UIAlertAction(title: "Cancel", style: .destructive, handler: nil))
+//
+//        let saveAction = UIAlertAction(title: "Next", style: .default, handler: { (action) -> Void in
+//
+//            self.showDropIn(clientTokenOrTokenizationKey: self.clientToken, amount: self.visaPrice)
+//        })
+//
+//        saveAction.isEnabled = false
+//
+//        seekForAC.view.addObserver(self, forKeyPath: "bounds", options: NSKeyValueObservingOptions.new, context: nil)
+//
+//        NotificationCenter.default.addObserver(forName: NSNotification.Name.UITextViewTextDidChange, object: seekForTV, queue: OperationQueue.main) { (notification) in
+//            saveAction.isEnabled = self.seekForTV.text != ""
+//        }
+//
+//        seekForTV.addBorder(view: seekForTV, stroke: UIColor.black, fill: UIColor.white, radius: 10, width: 2)
+//        seekForTV.frame = CGRect(x: 15, y: 50, width: 240, height: 150)
+//        seekForTV.backgroundColor = UIColor.white
+//        seekForAC.view.addSubview(self.seekForTV)
+//
+//        seekForAC.addAction(saveAction)
+//
+//        self.present(seekForAC, animated: true, completion: nil)
+//
+//    }
+//
+//    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey : Any]?, context: UnsafeMutableRawPointer?) {
+//        if keyPath == "bounds"{
+//            if let rect = (change?[NSKeyValueChangeKey.newKey] as? NSValue)?.cgRectValue{
+//                let margin:CGFloat = 8.0
+//                seekForTV.frame = CGRect(x: rect.origin.x + margin, y: rect.origin.y + margin, width: rect.width - 2*margin, height: rect.height / 2)
+//            }
+//        }
+//    }
+    
+    func alertNextAction(_ sender: UIAlertAction){
+        showDropIn(clientTokenOrTokenizationKey: clientToken, amount: visaPrice)
+    }
     
     // Payment
+    
     func showDropIn(clientTokenOrTokenizationKey: String, amount: Int) {
         
         indicator.startAnimating()
         
         let request =  BTDropInRequest()
         request.amount = "\(amount)"
+        request.applePayDisabled = false
         
         if clientTokenOrTokenizationKey.isEmpty {
             indicator.stopAnimating()
@@ -120,8 +251,38 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
                 // result.paymentDescription
                 
                 print(result.paymentMethod?.nonce ?? "")
+                           
+                self.definesPresentationContext = false
+                self.nonce = (result.paymentMethod?.nonce ?? "")
+                self.visaPrice = amount
                 
-                self.postNonceToServerVault((result.paymentMethod?.nonce ?? ""), amount)
+                if result.paymentOptionType == BTUIKPaymentOptionType.applePay{
+                    print("pay with apple pay")
+                    self.paymentMethodIndex = 2
+                    self.moreInfoTVC =  self.storyboard?.instantiateViewController(withIdentifier: "MoreInfoTVC") as! MoreInfoTVC
+                    self.moreInfoTVC.moreInfoDelegate = self
+                    
+                    self.present(self.moreInfoTVC, animated: true, completion: nil)
+                
+                }
+                else if result.paymentOptionType == BTUIKPaymentOptionType.visa{
+                    print("pay with visa")
+                    self.paymentMethodIndex = 1
+                    self.cardDetailsVC =  self.storyboard?.instantiateViewController(withIdentifier: "CardDetailsTVC") as! CardDetailsTVC
+                    self.cardDetailsVC.cardDetailsDelegate = self
+                    
+                    self.present(self.cardDetailsVC, animated: true, completion: nil)
+                }
+                else{
+//                    self.postNonceToServerVault((result.paymentMethod?.nonce ?? ""), amount)
+                    self.paymentMethodIndex = 0
+                    
+                    self.moreInfoTVC =  self.storyboard?.instantiateViewController(withIdentifier: "MoreInfoTVC") as! MoreInfoTVC
+                    self.moreInfoTVC.moreInfoDelegate = self
+                    
+                    self.present(self.moreInfoTVC, animated: true, completion: nil)
+                }
+                
             }
             controller.dismiss(animated: true, completion: nil)
         }
@@ -129,7 +290,7 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
         self.present(dropIn!, animated: true, completion: nil)
     }
     
-    func postNonceToServerVault(_ paymentMethodNonce: String, _ amount: Int) {
+    func postNonceToServerVault(_ paymentMethodNonce: String, _ amount: Int, _ seekFor: String) {
         
         indicator.startAnimating()
         //let dataCollector = BTDataCollector(environment: .Sandbox)
@@ -144,7 +305,8 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
             "customerId": customerId,
             "amount": "\(amount)",
             "visaName": visa.name,
-            "visaType": visaType
+            "visaType": visaType,
+            "seekFor": seekFor
         ]
         
         print(params)
@@ -188,6 +350,75 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
                     
                 }
                 
+            }
+            
+            self.indicator.stopAnimating()
+        }
+        
+    }
+    
+    func postVisaNonceToServerVault(_ paymentMethodNonce: String, _ amount: Int, cardHolder: String, cvv: String, billingAddress: String, seekFor: String) {
+        
+        indicator.startAnimating()
+        //let dataCollector = BTDataCollector(environment: .Sandbox)
+        //let deviceData = dataCollector.collectCardFraudData()
+        
+        let deviceData = PPDataCollector.collectPayPalDeviceData()
+        let customerId = UserDefaults().string(forKey: "customerId")!
+        print("postNonceToServerVault deviceData: \(deviceData)")
+        
+        let params: Parameters = [
+            "payment_method_nonce": paymentMethodNonce,
+            "customerId": customerId,
+            "amount": "\(amount)",
+            "visaName": visa.name,
+            "visaType": visaType,
+            "cardHolder": cardHolder,
+            "cvv": cvv,
+            "billingAdd": billingAddress,
+            "seekFor": seekFor
+        ]
+        
+        print(params)
+        
+        Alamofire.request(Urls.PAY_NONCE_VAULT, method: .post, parameters: params).responseJSON{
+            
+            response in
+            
+            print(response)
+            
+            if let result = response.result.value {
+                
+                let json = result as! NSDictionary
+                
+                if let success = json.value(forKey: "paySuccess") as? Bool{
+                    
+                    if success{
+                        let alert = UIAlertController(title: "Success", message: "Thank you, Your request have been submitted.\n You will receive a notification to complete the required documents.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: json.value(forKey: "payError") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Try Again", style: UIAlertActionStyle.destructive, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    
+                }
+                else if let success = json.value(forKey: "methodSuccess") as? Bool{
+                    
+                    if success{
+                        let alert = UIAlertController(title: "Success", message: "Your payment method have been added.", preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    else {
+                        let alert = UIAlertController(title: "Error", message: json.value(forKey: "methodError") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                        alert.addAction(UIAlertAction(title: "Try Again", style: UIAlertActionStyle.destructive, handler: nil))
+                        self.present(alert, animated: true, completion: nil)
+                    }
+                    
+                }
                 
             }
             
@@ -196,7 +427,6 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
         
     }
     
-    
     func fetchClientToken(){
         
         let parameters: Parameters = [
@@ -204,7 +434,7 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
         ]
         
         print(parameters)
-        
+        indicator.startAnimating()
         Alamofire.request(Urls.CLIENT_TOKEN, method: .post, parameters: parameters)
             .responseJSON{
                 
@@ -216,8 +446,9 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
                     
                     let json = result as! NSDictionary
                     self.clientToken = json.value(forKey: "token") as! String
-                    
+                    self.braintreeClient = BTAPIClient(authorization: self.clientToken)
                 }
+                self.indicator.stopAnimating()
         }
         
     }
@@ -319,10 +550,43 @@ class VisaOptionsTVC: UITableViewController, BTAppSwitchDelegate, BTViewControll
             
         }
     }
-    
    
 }
 
-
+extension VisaOptionsTVC: MoreInfoDelegate, CardDetailsDelegate{    
+    
+    func info(seekFor: String) {
+        
+        self.seekFor = seekFor
+        
+        moreInfoTVC.dismiss(animated: true, completion: nil)
+        
+        switch paymentMethodIndex {
+        case 0:
+            self.postNonceToServerVault(nonce, visaPrice, seekFor)
+            break
+        case 2:
+            self.payWithApplePay(self.visaType, "\(visaPrice)")
+            break
+        default:
+            break
+        }
+        
+    }
+    
+    func cardDetailsWithSeek(name: String, cvv: String, strAddress: String, city: String, state: String, zipCode: String, country: String, seekFor: String) {
+        
+        cardDetailsVC.dismiss(animated: true, completion: nil)
+        let address = strAddress + ", " + city + ", " + state + ", " + zipCode + ", " + country
+        self.postVisaNonceToServerVault(nonce, visaPrice, cardHolder: name, cvv: cvv, billingAddress: address, seekFor: seekFor)
+        
+    }
+    
+    func cardDetails(name: String, cvv: String, strAddress: String, city: String, state: String, zipCode: String, country: String) {
+        
+        
+    }
+    
+}
 
 

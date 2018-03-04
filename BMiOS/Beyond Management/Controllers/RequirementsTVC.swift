@@ -174,7 +174,7 @@ class RequirementsTVC: UITableViewController {
                         if let json = result as? NSDictionary{
                             if !(json.value(forKey: "error") as! Bool){
                                 let alert = UIAlertController(title: "Success", message: "Thank you, Your document have been submitted.\n You will receive a notification after reviewing it.", preferredStyle: UIAlertControllerStyle.alert)
-                                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: nil))
+                                alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: self.refresh))
                                 self.present(alert, animated: true, completion: nil)
                             }
                             else{
@@ -184,7 +184,7 @@ class RequirementsTVC: UITableViewController {
                             }
                         }
                         
-                        self.getRequirements()
+//                        self.getRequirements()
                     }
                     else{
                         let alert = UIAlertController(title: "Error", message: "Upload document is faild!", preferredStyle: UIAlertControllerStyle.alert)
@@ -219,6 +219,11 @@ class RequirementsTVC: UITableViewController {
         }
     }
     
+    func refresh(_ sender: UIAlertAction){
+        
+        getRequirements()
+    }
+    
     @objc func chooseSubmissionMethod(_ sender: UIButton){
         
         reqID = "\(sender.tag)"
@@ -236,7 +241,7 @@ class RequirementsTVC: UITableViewController {
         //Create and add first option action
         let captureAction: UIAlertAction = UIAlertAction(title: "Camera", style: .default) { action -> Void in
             
-            let status = AVCaptureDevice.authorizationStatus(for: AVMediaType.video)
+            let status = AVCaptureDevice.authorizationStatus(forMediaType: AVMediaTypeVideo)
             if (status == .authorized || status == .notDetermined) {
                 if UIImagePickerController.isSourceTypeAvailable(.camera) {
                     self.imagePicker.sourceType = .camera
