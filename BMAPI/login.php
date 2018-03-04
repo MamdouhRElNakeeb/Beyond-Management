@@ -39,10 +39,20 @@ if ($user){
         $returnArray["error"] = FALSE;
         $returnArray["message"] = "Login is Successful";
         $returnArray["id"] = $user["id"];
-        $returnArray["name"] = $user["name"];
-        $returnArray["email"] = $user["email"];
+
+        $returnArray["fname"] = $user["fname"];
+        $returnArray["mname"] = $user["mname"];
+        $returnArray["lname"] = $user["lname"];
+
         $returnArray["phone"] = $user["phone"];
-        $returnArray["address"] = $user["address"];
+        $returnArray["strAdd"] = $user["str_address"];
+        $returnArray["city"] = $user["city"];
+        $returnArray["state"] = $user["state"];
+        $returnArray["zipCode"] = $user["zip_code"];
+        $returnArray["country"] = $user["country"];
+
+        $returnArray["email"] = $user["email"];
+
         $returnArray["customer_id"] = $user["customer_id"];
         $access->updateApplicantWithRegID($regID, $user["id"]);
     }

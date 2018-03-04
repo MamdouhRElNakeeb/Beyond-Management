@@ -28,7 +28,7 @@ $user = $access->selectApplicantWithCustomerId($customerId);
 
 if ($user){
 
-    $result = $access->addSkypeRequest($user["id"], $payId, "skype");
+    $result = $access->addSkypeRequest($user["id"], $payId);
 
     if ($result){
 
@@ -52,6 +52,32 @@ if ($user){
             echo $returnArray;
             exit;
         }
+
+        //
+        $url = ADMIN. 'sendMail.php';
+
+        // what post fields?
+        $data = array('to' => ADMIN_EMAIL,
+            'from' => NOREPLAY_EMAIL,
+            'subject' => "New Skype Request",
+            'msg' => $user["name"] ." requested Skype call with payment ID: " . $payId);
+
+        // build the urlencoded data
+        $postvars = http_build_query($data);
+
+        // open connection
+        $ch = curl_init();
+
+        // set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, count($data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+
+
+        // execute post
+        $result = curl_exec($ch);
+        curl_close($ch);
 
         $returnArray["success"] = true;
         echo $returnArray;

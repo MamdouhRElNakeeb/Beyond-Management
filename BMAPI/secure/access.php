@@ -71,9 +71,9 @@ class access{
     }
 
     // insert application into database
-    public function addApplication($applicant_id, $visaName, $visaType, $payId){
-        $sql = "INSERT INTO applications (visa_id, applicant_id, type, payment_id)
-                SELECT id, '".$applicant_id."', '".$visaType."', '".$payId."'
+    public function addApplication($applicant_id, $visaName, $visaType, $payId, $seekFor){
+        $sql = "INSERT INTO applications (visa_id, applicant_id, type, payment_id, seek_for)
+                SELECT id, '".$applicant_id."', '".$visaType."', '".$payId."', '".$seekFor."'
                 FROM immigration WHERE name = '".$visaName."'";
 
 
@@ -99,8 +99,8 @@ class access{
     // select applications from database
     public function getApplications(){
         $sql = "SELECT applications.id, immigration.name AS visa, applications.type, 
-                  applications.status AS app_status, applications.created_at,
-	              applicants.name, applicants.email, payments.amount, 
+                  applications.status AS app_status, applications.created_at, applications.seek_for,
+	              applicants.fname, applicants.mname, applicants.lname, applicants.email, payments.amount, 
 	              payments.payment_id, payments.status AS pay_status
                 FROM applications
                 INNER JOIN applicants ON applications.applicant_id = applicants.id
@@ -150,6 +150,20 @@ class access{
         return $returnValue;
     }
 
+    // select applications from database
+    public function getPayments(){
+        $sql = "SELECT payments.id, payments.payment_id, payments.amount, payments.service, 
+                  payments.status AS pay_status, payments.created_at AS pay_date,
+                  applications.status AS app_status, applications.created_at AS app_date,
+	              applicants.fname, applicants.mname, applicants.lname, applicants.email
+                FROM payments
+                INNER JOIN applications ON payments.application_id = applications.id
+                INNER JOIN applicants ON applications.applicant_id = applicants.id";
+
+        $result = $this->conn->query($sql);
+
+        return $result;
+    }
 
     public function addSkypeRequest($applicant_id, $payId){
         $sql = "INSERT INTO skype SET applicant_id=?, payment_id=?";
@@ -165,6 +179,21 @@ class access{
         $returnValue = $statement->insert_id;
         return $returnValue;
 
+    }
+
+    // select applications from database
+    public function getSkypeRequests(){
+        $sql = "SELECT skype.id, skype.status AS skype_status, skype.created_at,
+	              applicants.fname, applicants.mname, applicants.lname, applicants.email, payments.amount, 
+	              payments.payment_id, payments.status AS pay_status
+                FROM skype
+                INNER JOIN applicants ON skype.applicant_id = applicants.id
+                INNER JOIN payments ON skype.payment_id = payments.payment_id
+                ORDER BY skype.status = 'waiting' ASC";
+
+        $result = $this->conn->query($sql);
+
+        return $result;
     }
 
     // insert service into database
@@ -341,6 +370,19 @@ class access{
     }
 
     // select user form database
+    public function verifyApplicant($email, $password){
+        $sql = "SELECT * FROM applicants WHERE md5(email) = '".$email."' AND md5(password) = '".$password."' ";
+        $result = $this->conn->query($sql);
+        if($result !=null && (mysqli_num_rows($result) >=1)){
+            $row = $result->fetch_array(MYSQLI_ASSOC);
+            if(!empty($row)){
+                $returnArray = $row;
+                return $returnArray;
+            }
+        }
+    }
+
+    // select user form database
     public function selectApplicantFromDocID($req_id){
         $sql = "SELECT * 
                 FROM applicants   
@@ -397,15 +439,66 @@ class access{
         }
     }
 
+    public function selectApplicantWithId($id){
+        $sql = "SELECT * FROM applicants WHERE id = '".$id."' ";
+        $result = $this->conn->query($sql);
+        if($result !=null && (mysqli_num_rows($result) >=1)){
+            $row = $result->fetch_array(MYSQLI_ASSOC);
+            if(!empty($row)){
+                $returnArray = $row;
+                return $returnArray;
+            }
+        }
+    }
+
     // insert user into database
-    public function registerUser($name, $email, $password, $salt, $phone, $address, $regID){
-        $sql = "INSERT INTO applicants SET name=?, email=?, password=?, salt=?, phone=?, address=?, reg_id=?";
+    public function registerApplicant($fname, $mname, $lname, $email, $password, $salt, $phone, $strAdd, $city,
+                                      $state, $zipCode, $country, $regID){
+        $sql = "INSERT INTO applicants SET fname=?, mname=?, lname=?, email=?, password=?, salt=?, phone=?,
+                str_address=?, city=?, state=?, zip_code=?, country=?, reg_id=?";
         $statement = $this->conn->prepare($sql);
         if(!$statement){
             throw new Exception($statement->error);
         }
         // bind 9 parameters of type string to be placed in $sql command
-        $statement->bind_param("sssssss", $name, $email, $password, $salt, $phone, $address, $regID);
+        $statement->bind_param("sssssssssssss", $fname, $mname, $lname, $email, $password, $salt, $phone, $strAdd,
+            $city, $state, $zipCode, $country, $regID);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    public function resetPasswordStatus($id){
+        $sql = "SELECT * FROM password_reset WHERE userID = '".$id."' ";
+        $result = $this->conn->query($sql);
+        if($result !=null && (mysqli_num_rows($result) >=1)){
+            $row = $result->fetch_array(MYSQLI_ASSOC);
+            if(!empty($row)){
+                $returnArray = $row;
+                return $returnArray;
+            }
+        }
+    }
+
+    public function updateApplicantWithPass($password, $salt, $id){
+        $sql = "UPDATE applicants SET password=?, salt=? WHERE id=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 2 parameters of type string to be placed in $sql command
+        $statement->bind_param("sss", $password, $salt, $id);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    public function updatePassResetStatus($id){
+        $sql = "DELETE FROM password_reset WHERE userID = ?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 2 parameters of type string to be placed in $sql command
+        $statement->bind_param("s", $id);
         $returnValue = $statement->execute();
         return $returnValue;
     }
@@ -444,6 +537,86 @@ class access{
 
     }
 
+    // select applications from database
+    public function getMessages(){
+        $sql = "SELECT messages.id, messages.msg, messages.created_at, messages.response,
+	              applicants.fname, applicants.mname, applicants.lname, applicants.email
+                FROM messages
+                INNER JOIN applicants ON messages.applicant_id = applicants.id
+                ORDER BY messages.response = 'NULL' ASC";
+
+        $result = $this->conn->query($sql);
+
+        return $result;
+    }
+
+    // update doc in database
+    public function respondMsg($id, $response){
+        $sql = "UPDATE messages SET response=? WHERE id=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 2 parameters of type string to be placed in $sql command
+        $statement->bind_param("ss", $response,  $id);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    /**
+     * Email Templates
+     */
+    public function getEmailTemp($id){
+        $sql = "SELECT * FROM email_temps WHERE id = '".$id."' ";
+        $result = $this->conn->query($sql);
+        if($result !=null && (mysqli_num_rows($result) >=1)){
+            $row = $result->fetch_array(MYSQLI_ASSOC);
+            if(!empty($row)){
+                $returnArray = $row;
+                return $returnArray;
+            }
+        }
+    }
+
+    public function addEmailTemp($name, $email, $subject, $msg){
+        $sql = "INSERT INTO email_temps SET name=?, email=?, subject=?, msg=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 8 parameters of type string to be placed in $sql command
+        $statement->bind_param("ssss", $name, $email, $subject, $msg);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    public function updateEmailTempWithMsg($name, $email, $subject, $msg, $host, $password, $id){
+        $sql = "UPDATE email_temps SET name=?, email=?, subject=?, msg=?, host=?, password=? WHERE id=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 2 parameters of type string to be placed in $sql command
+        $statement->bind_param("sssssss", $name, $email, $subject, $msg, $host, $password, $id);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    public function updateEmailTemp($name, $email, $subject, $host, $password, $id){
+        $sql = "UPDATE email_temps SET name=?, email=?, subject=?, host=?, password=? WHERE id=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 2 parameters of type string to be placed in $sql command
+        $statement->bind_param("ssssss", $name, $email, $subject, $host, $password, $id);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    /**
+     * Push Notifications APN Messages
+     **/
     public function sendAPNPro($title, $msg, $token){
 
         $apnsCert = 'secure/APN_PRO.pem';
@@ -490,6 +663,8 @@ class access{
 
         // Close the connection to the server
         fclose($fp);
+
+        return $returnArr;
 
     }
 

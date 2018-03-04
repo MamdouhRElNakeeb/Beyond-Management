@@ -16,8 +16,9 @@ if ($_SESSION['valid'] != true){
 }
 
 
-$req_id = htmlentities($_REQUEST["req_id"]);
-$status = htmlentities($_REQUEST["status"]);
+$id = htmlentities($_REQUEST["id"]);
+$email = htmlentities($_REQUEST["email"]);
+$response = htmlentities($_REQUEST["response"]);
 
 require ("secure/access.php");
 require ("secure/bmconn.php");
@@ -26,30 +27,30 @@ require ("secure/bmconn.php");
 $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
-$result = $access->updateDocStatus($req_id, $status);
+$result = $access->respondMsg($id, $response);
 
 if ($result){
 
-    $applicant = $access->selectApplicantFromDocID($req_id);
+    $applicant = $access->selectApplicant($email);
 
     if ($applicant){
 
         $returnArray["error"] = FALSE;
 
-        $sendAPNPro = $access->sendAPNPro("Document Status Update", "Your document status is changed to " .$status, $applicant["reg_id"]);
-        $sendAPNDev = $access->sendAPNDev("Document Status Update", "Your document status is changed to " .$status, $applicant["reg_id"]);
-
+        $sendAPNPro = $access->sendAPNPro("BMG Support", $response, $applicant["reg_id"]);
+        $sendAPNDev = $access->sendAPNDev("BMG Support", $response, $applicant["reg_id"]);
 
         $returnArray["message"] = $sendAPNPro["msg"];
 
-        $emailTemp = $access->getEmailTemp(3);
-        $url = ADMIN . 'sendMail.php';
+
+        $emailTemp = $access->getEmailTemp(2);
+        $url = ADMIN.'sendMail.php';
 
         // what post fields?
-        $data = array('to' => $applicant["email"],
+        $data = array('to' => $email,
             'from' => $emailTemp["email"],
             'subject' => $emailTemp["subject"],
-            'msg' => "Your document status is changed to " .$status);
+            'msg' => $response);
 
         // build the urlencoded data
         $postvars = http_build_query($data);

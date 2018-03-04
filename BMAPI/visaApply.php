@@ -10,6 +10,7 @@ $customerId = htmlentities($_REQUEST["customerId"]);
 $visaName = htmlentities($_REQUEST["visaName"]);
 $visaType = htmlentities($_REQUEST["visaType"]);
 $payId = htmlentities($_REQUEST["payId"]);
+$seekFor = htmlentities($_REQUEST["seekFor"]);
 
 if (empty($customerId) || empty($visaName) || empty($visaType) || empty($payId)){
     $returnArray["success"] = false;
@@ -47,7 +48,7 @@ if ($user){
         }
     }
 
-    $result = $access->addApplication($user["id"], $visaName, $visaType, $payId);
+    $result = $access->addApplication($user["id"], $visaName, $visaType, $payId, $seekFor);
 
     if ($result){
 
@@ -71,6 +72,32 @@ if ($user){
             echo $returnArray;
             exit;
         }
+
+        //
+        $url = ADMIN. 'sendMail.php';
+
+        // what post fields?
+        $data = array('to' => ADMIN_EMAIL,
+            'from' => NOREPLAY_EMAIL,
+            'subject' => "New VISA Application",
+            'msg' => $user["name"] ." applied for " . $visaName . " " .$visaType . " with payment ID: " . $payId);
+
+        // build the urlencoded data
+        $postvars = http_build_query($data);
+
+        // open connection
+        $ch = curl_init();
+
+        // set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, count($data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+
+
+        // execute post
+        $result = curl_exec($ch);
+        curl_close($ch);
 
         $returnArray["success"] = true;
         echo $returnArray;

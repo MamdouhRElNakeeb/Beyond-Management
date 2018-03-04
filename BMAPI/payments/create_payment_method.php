@@ -1,32 +1,53 @@
 <?php
-	require_once("./btsetup.php");	
+	require_once("./btsetup.php");
+    require_once("../secure/bmconn.php");
 
-	if (!(isset($_POST["customerId"]) || isset($_POST["payment_method_nonce"]))){
+if (!(isset($_POST["customerId"]) || isset($_POST["payment_method_nonce"]))){
 
 	    return;
     }
 
     if (!empty($_POST["amount"])) {
-        $result = Braintree_Transaction::sale([
-            'amount' => $_POST["amount"],
-            'paymentMethodNonce' => $_POST["payment_method_nonce"],
-            'options' => [
-                'storeInVaultOnSuccess' => true,
-                'submitForSettlement' => True
-            ]
-        ]);
+
+        if (isset($_POST["cardHolder"]) && isset($_POST["billingAdd"])){
+            $result = Braintree_Transaction::sale([
+                'amount' => $_POST["amount"],
+                'paymentMethodNonce' => $_POST["payment_method_nonce"],
+                'options' => [
+                    'storeInVaultOnSuccess' => true,
+                    'submitForSettlement' => True
+                ],
+//                'creditCard' => [
+//                    'cardholderName' => $_POST["cardHolder"]
+//                ],
+                'billing' => [
+                    'streetAddress' => $_POST["billingAdd"]
+                ]
+            ]);
+        }
+        else{
+            $result = Braintree_Transaction::sale([
+                'amount' => $_POST["amount"],
+                'paymentMethodNonce' => $_POST["payment_method_nonce"],
+                'options' => [
+                    'storeInVaultOnSuccess' => true,
+                    'submitForSettlement' => True
+                ]
+            ]);
+        }
 
         if ($result->success){
             if ($result->transaction) {
                 $response['data'] = $result->transaction;
                 $response['paySuccess'] = true;
 
-                $url = 'http://bm.nakeeb.me/visaApply.php';
+                $url = ROOT .'visaApply.php';
 
                 // what post fields?
                 $data = array('customerId' => $_POST["customerId"],
                                 'visaName' => $_POST["visaName"],
                                 'visaType' => $_POST["visaType"],
+                                'seekFor' => $_POST["seekFor"],
                                 'payId' => $result->transaction->id);
 
                 // build the urlencoded data

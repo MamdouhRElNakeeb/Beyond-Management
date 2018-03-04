@@ -21,7 +21,7 @@
                 $response['data'] = $result->transaction;
                 $response['paySuccess'] = true;
 
-                $url = 'http://bm.nakeeb.me/skypeRequest.php';
+                $url = 'https://crete-dev.com/bmg/skypeRequest.php';
 
                 // what post fields?
                 $data = array('customerId' => $_POST["customerId"],

@@ -22,7 +22,7 @@ require ("../secure/bmconn.php");
 $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
-$result = $access->getTableContent("payments");
+$result = $access->getPayments();
 
 ?>
 
@@ -30,97 +30,18 @@ $result = $access->getTableContent("payments");
 <!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png" />
-    <link rel="icon" type="image/png" href="assets/img/favicon.png" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
 
     <title>Payments</title>
 
-    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-    <meta name="viewport" content="width=device-width" />
-
-
-    <!-- Bootstrap core CSS     -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
-
-    <!--  Material Dashboard CSS    -->
-    <link href="assets/css/material-dashboard.css" rel="stylesheet"/>
-
-    <!--  CSS for Demo Purpose, don't include it in your project     -->
-    <link href="assets/css/demo.css" rel="stylesheet" />
-
-    <!--     Fonts and icons     -->
-    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
-    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300|Material+Icons' rel='stylesheet' type='text/css'>
-
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <?php include ('header.html'); ?>
 </head>
 
 <body>
 
 <div class="wrapper">
-    <div class="sidebar" data-color="green" data-image="assets/img/sidebar-1.jpg">
-        <!--
-            Tip 1: You can change the color of the sidebar using: data-color="purple | blue | green | orange | red"
 
-            Tip 2: you can also add an image using data-image tag
-        -->
-
-        <div class="logo">
-            <a href="#" class="simple-text" target="_blank">
-                Beyond Management
-            </a>
-        </div>
-
-        <div class="sidebar-wrapper">
-            <ul class="nav">
-                <li>
-                    <a href="index.php">
-                        <i class="material-icons">dashboard</i>
-                        <p>Home</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="services.php">
-                        <i class="material-icons">flight</i>
-                        <p>Immigration Services</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="applicants.php">
-                        <i class="material-icons">group</i>
-                        <p>Applicants</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="applications.php">
-                        <i class="material-icons">tap_and_play</i>
-                        <p>Applications</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="documents.php">
-                        <i class="material-icons">content_paste</i>
-                        <p>Documents</p>
-                    </a>
-                </li>
-                <li class="active">
-                    <a href="payments.php">
-                        <i class="material-icons">attach_money</i>
-                        <p>Payments</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="users.php">
-                        <i class="material-icons">group</i>
-                        <p>Users</p>
-                    </a>
-                </li>
-
-            </ul>
-        </div>
-    </div>
+    <?php include('sidebar.html'); ?>
 
     <div class="main-panel">
         <nav class="navbar navbar-transparent navbar-absolute">
@@ -196,14 +117,16 @@ $result = $access->getTableContent("payments");
 
                             </div>
                             <div class="card-content table-responsive">
-                                <table class="table">
+                                <input class="form-control" type="text" id="search" onkeyup="searchFn()" placeholder="Search for ..." title="Type in a name">
+                                <table id="table" class="table">
                                     <thead class="text-primary">
 
-                                    <th>Applicant</th>
-                                    <th>Service</th>
-                                    <th>Payment</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
+                                    <th onclick="sortTable(0)">Applicant</th>
+                                    <th onclick="sortTable(1)">Service</th>
+                                    <th onclick="sortTable(2)">Payment</th>
+                                    <th onclick="sortTable(3)">Status</th>
+                                    <th onclick="sortTable(4)">Date</th>
+<!--                                    <th>Action</th>-->
                                     </thead>
                                     <tbody>
                                     <?php
@@ -212,15 +135,16 @@ $result = $access->getTableContent("payments");
 
                                         ?>
                                         <tr>
-                                            <td><?php echo $row["applicant"]; ?></td>
+                                            <td><a href="<?php echo "mailto:". $row["email"]; ?>"><?php echo $row["fname"] ." ";echo $row["mname"] ." ";echo $row["lname"]; ?></a></td>
                                             <td><?php echo $row["service"]; ?></td>
-                                            <td><?php echo $row["payment"]; ?></td>
-                                            <td><?php echo $row["status"]; ?></td>
-                                            <td class="td-actions text-right">
-                                                <button type="button" value="<?php echo $row["id"]; ?>" rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs" style="display: none;">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
-                                            </td>
+                                            <td><?php echo $row["amount"]; ?></td>
+                                            <td><?php echo $row["pay_status"]; ?></td>
+                                            <td><?php echo $row["pay_date"]; ?></td>
+<!--                                            <td class="td-actions text-right">-->
+<!--                                                <button type="button" value="--><?php //echo $row["id"]; ?><!--" rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs" style="display: none;">-->
+<!--                                                    <i class="fa fa-edit"></i>-->
+<!--                                                </button>-->
+<!--                                            </td>-->
 
                                         </tr>
 
@@ -317,28 +241,8 @@ $result = $access->getTableContent("payments");
 
 </body>
 
-<!--   Core JS Files   -->
-<script src="assets/js/jquery-3.1.0.min.js" type="text/javascript"></script>
-<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
-<script src="assets/js/material.min.js" type="text/javascript"></script>
 
-<!--  Charts Plugin -->
-<script src="assets/js/chartist.min.js"></script>
-
-<!--  Notifications Plugin    -->
-<script src="assets/js/bootstrap-notify.js"></script>
-
-<!--  Google Maps Plugin    -->
-<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
-
-<!-- Material Dashboard javascript methods -->
-<script src="assets/js/material-dashboard.js"></script>
-
-<!-- Material Dashboard DEMO methods, don't include it in your project! -->
-<script src="assets/js/demo.js"></script>
-
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
-
+<?php include ('scripts.html'); ?>
 
 <script>
 
@@ -389,6 +293,11 @@ $result = $access->getTableContent("payments");
             }
         });
 
+    });
+
+    $(document).ready(function (e) {
+
+        $(".nav li:nth-child(8)").addClass('active');
     });
 
 </script>

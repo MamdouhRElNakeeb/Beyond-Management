@@ -5,6 +5,9 @@
     $braintree_cust_id = htmlentities($_REQUEST["customerId"]);
 
 	if(empty($braintree_cust_id)) {
+        $returnArray["status"] = "400";
+        $returnArray["message"] = "Missing Fields!";
+        echo json_encode($returnArray);
         return;
 	}
 

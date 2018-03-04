@@ -22,7 +22,7 @@ require ("../secure/bmconn.php");
 $access = new access(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
 $access->connect();
 
-$result = $access->getTableContent("applicants");
+$result = $access->getSkypeRequests();
 
 ?>
 
@@ -31,7 +31,7 @@ $result = $access->getTableContent("applicants");
 <html lang="en">
 <head>
 
-    <title>Manage Applicants</title>
+    <title>Skype Requests</title>
 
 
     <?php include ('header.html');?>
@@ -112,22 +112,19 @@ $result = $access->getTableContent("applicants");
                     <div class="col-md-12">
                         <div class="card">
                             <div class="card-header" data-background-color="green">
-                                <h4 style="margin-left: 5%" class="title">Applicants</h4>
-                                <p style="margin-left: 5%" class="category">Manage applicants</p>
+                                <h4 style="margin-left: 5%" class="title">Skype Requests</h4>
+                                <p style="margin-left: 5%" class="category">Control requests</p>
 
                             </div>
                             <div class="card-content table-responsive">
-                                <input class="form-control" type="text" id="search" onkeyup="searchFn()" placeholder="Search for ..." title="Type in ...">
-
+                                <input class="form-control" type="text" id="search" onkeyup="searchFn()" placeholder="Search for ..." title="Type in a name">
                                 <table id="table" class="table">
                                     <thead class="text-primary">
 
-                                    <th onclick="sortTable(0)">Full Name</th>
-                                    <th onclick="sortTable(1)">Email</th>
-                                    <th onclick="sortTable(2)">Phone</th>
-                                    <th onclick="sortTable(3)">Address</th>
-                                    <th onclick="sortTable(4)">Status</th>
-                                    <th onclick="sortTable(5)">Date</th>
+                                    <th onclick="sortTable(0)">Name</th>
+                                    <th onclick="sortTable(1)">E-mail</th>
+                                    <th onclick="sortTable(2)">Status</th>
+                                    <th onclick="sortTable(3)">Date</th>
                                     <th>Action</th>
                                     </thead>
                                     <tbody>
@@ -139,13 +136,11 @@ $result = $access->getTableContent("applicants");
                                         <tr>
                                             <td><?php echo $row["fname"] ." ";echo $row["mname"] ." ";echo $row["lname"]; ?></td>
                                             <td><?php echo $row["email"]; ?></td>
-                                            <td><?php echo $row["phone"]; ?></td>
-                                            <td><?php echo $row["str_address"] . ",\r\n"; ?> <br> <?php echo $row["city"] . ", ";echo $row["state"].", " ;echo $row["zip_code"] . ",\r\n" ; ?> <br> <?php echo $row["country"]; ?></td>
-                                            <td><?php echo $row["status"]; ?></td>
-                                            <td><?php echo date( 'M. d, Y h:i A', strtotime($row["created_at"]) ); ?></td>
+                                            <td><?php echo $row["skype_status"]; ?></td>
+                                            <td><?php echo $row["created_at"]; ?></td>
                                             <td class="td-actions text-right">
 
-                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. '~' .$row["fname"]. '~' .$row["mname"]. '~' .$row["lname"]. '~' .$row["email"]. '~' .$row["phone"]. '~' .$row["str_address"]. '~'.$row["city"]. '~'.$row["state"]. '~'.$row["zip_code"]. '~' .$row["country"]. '~' .$row["status"]; ?>">
+                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. '~' .$row["fname"]. ' ' .$row["mname"]. ' ' .$row["lname"]. '~' .$row["email"]. '~' .$row["skype_status"]. '~' .$row["created_at"]; ?>">
                                                     <i class="fa fa-edit"></i>
                                                 </button>
                                                 <button value="<?php echo $row["id"]; ?>" type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs remove-btn">
@@ -170,7 +165,33 @@ $result = $access->getTableContent("applicants");
             </div>
         </div>
 
-        <?php include ('footer.html'); ?>
+        <footer class="footer">
+            <div class="container-fluid">
+                <nav class="pull-left">
+                    <ul>
+                        <li>
+                            <a href="http://nakeeb.me" target="_blank">
+                                Beyond Management
+                            </a>
+                        </li>
+                        <li>
+                            <a href="" target="_blank">
+                                Android
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" target="_blank">
+                                iOS
+                            </a>
+                        </li>
+
+                    </ul>
+                </nav>
+                <p class="copyright pull-right">
+                    &copy; <script>document.write(new Date().getFullYear())</script> <a href="http://nakeeb.me">Mamdouh El Nakeeb</a>, All rights reserved
+                </p>
+            </div>
+        </footer>
     </div>
 </div>
 
@@ -191,29 +212,11 @@ $result = $access->getTableContent("applicants");
 
 
                     <div class="col-sm-12">
-                        <div class="col-sm-4">
-                            <div class="input-group">
+                        <div class="input-group">
 		                        <span class="input-group-addon">
 			                        <i class="material-icons">format_size</i>
 		                        </span>
-                                <input id="fname" type="text" class="form-control" placeholder="First Name">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">format_size</i>
-		                        </span>
-                                <input id="mname" type="text" class="form-control" placeholder="Middle Name">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">format_size</i>
-		                        </span>
-                                <input id="lname" type="text" class="form-control" placeholder="Last Name">
-                            </div>
+                            <input id="name" type="text" class="form-control" placeholder="Name" disabled>
                         </div>
                     </div>
 
@@ -222,60 +225,7 @@ $result = $access->getTableContent("applicants");
 		                        <span class="input-group-addon">
 			                        <i class="material-icons">format_size</i>
 		                        </span>
-                            <input id="email" type="email" class="form-control" placeholder="Email">
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12">
-                        <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">format_size</i>
-		                        </span>
-                            <input id="phone" type="tel" class="form-control" placeholder="phone">
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12">
-                        <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">place</i>
-		                        </span>
-                            <input id="str_address" type="text" class="form-control" placeholder="Street Address">
-                        </div>
-                    </div>
-
-                    <div class="col-sm-12">
-                        <div class="col-sm-4">
-                            <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">place</i>
-		                        </span>
-                                <input id="city" type="text" class="form-control" placeholder="City">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">place</i>
-		                        </span>
-                                <input id="state" type="text" class="form-control" placeholder="State">
-                            </div>
-                        </div>
-                        <div class="col-sm-4">
-                            <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">place</i>
-		                        </span>
-                                <input id="zip_code" type="text" class="form-control" placeholder="Zip Code">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-12">
-                        <div class="input-group">
-		                        <span class="input-group-addon">
-			                        <i class="material-icons">place</i>
-		                        </span>
-                            <input id="country" type="text" class="form-control" placeholder="Country">
+                            <input id="email" type="email" class="form-control" placeholder="E-mail" disabled>
                         </div>
                     </div>
 
@@ -287,6 +237,17 @@ $result = $access->getTableContent("applicants");
                             <input id="status" type="text" class="form-control" placeholder="Status">
                         </div>
                     </div>
+
+                    <div class="col-sm-12">
+                        <div class="input-group">
+		                        <span class="input-group-addon">
+			                        <i class="material-icons">format_size</i>
+		                        </span>
+                            <input id="date" type="text" class="form-control" placeholder="Date" disabled>
+                        </div>
+                    </div>
+
+
                 </form>
                 <div id="message"></div>
             </div>
@@ -308,7 +269,7 @@ $result = $access->getTableContent("applicants");
     $('.remove-btn').click(function(){
         /* when the submit button in the modal is clicked, submit the form */
 
-        var dataString = "tblName=" + "applicants" + "&dir=" + "" +  "&id="+ $(this).attr("value");
+        var dataString = "tblName=" + "skype" + "&dir=" + "" +  "&id="+ $(this).attr("value");
 
         $.ajax({
             type: "POST",
@@ -328,17 +289,10 @@ $result = $access->getTableContent("applicants");
         var paramsArr = $(this).attr("value").split('~');
 
         $('#id').val(paramsArr[0]);
-        $('#fname').val(paramsArr[1]);
-        $('#mname').val(paramsArr[2]);
-        $('#lname').val(paramsArr[3]);
-        $('#email').val(paramsArr[4]);
-        $('#phone').val(paramsArr[5]);
-        $('#str_address').val(paramsArr[6]);
-        $('#city').val(paramsArr[7]);
-        $('#state').val(paramsArr[8]);
-        $('#zip_code').val(paramsArr[9]);
-        $('#country').val(paramsArr[10]);
-        $('#status').val(paramsArr[11]);
+        $('#name').val(paramsArr[1]);
+        $('#email').val(paramsArr[2]);
+        $('#status').val(paramsArr[3]);
+        $('#date').val(paramsArr[4]);
 
         $('#addAD').modal('show');
         return false;
@@ -346,8 +300,7 @@ $result = $access->getTableContent("applicants");
 
     $(document).ready(function (e) {
 
-        $(".nav li:nth-child(3)").addClass('active');
-
+        $(".nav li:nth-child(5)").addClass('active');
     });
 
 </script>
