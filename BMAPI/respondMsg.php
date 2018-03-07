@@ -40,8 +40,6 @@ if ($result){
         $sendAPNPro = $access->sendAPNPro("BMG Support", $response, $applicant["reg_id"]);
         $sendAPNDev = $access->sendAPNDev("BMG Support", $response, $applicant["reg_id"]);
 
-        $returnArray["message"] = $sendAPNPro["msg"];
-
 
         $emailTemp = $access->getEmailTemp(2);
         $url = ADMIN.'sendMail.php';
@@ -50,7 +48,9 @@ if ($result){
         $data = array('to' => $email,
             'from' => $emailTemp["email"],
             'subject' => $emailTemp["subject"],
-            'msg' => $response);
+            'msg' => $response,
+            'pass' => $emailTemp["password"],
+            'host' => $emailTemp["host"]);
 
         // build the urlencoded data
         $postvars = http_build_query($data);
@@ -66,8 +66,10 @@ if ($result){
 
 
         // execute post
-        curl_exec($ch);
+        $result = curl_exec($ch);
         curl_close($ch);
+
+        $returnArray["message"] = $result;
 
     }
     else{
