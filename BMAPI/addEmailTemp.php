@@ -26,45 +26,45 @@ $password = htmlentities($_REQUEST["password"]);
 
 if (empty($name)){
 
-    $result["error"] = TRUE;
-    $result["msg"] = "Name is missing";
-    echo json_encode($result);
+    $returnArray["error"] = TRUE;
+    $returnArray["msg"] = "Name is missing";
+    echo json_encode($returnArray);
     return;
 }
 if (empty($email)){
 
-    $result["error"] = TRUE;
-    $result["msg"] = "E-mail is missing";
-    echo json_encode($result);
+    $returnArray["error"] = TRUE;
+    $returnArray["msg"] = "E-mail is missing";
+    echo json_encode($returnArray);
     return;
 }
 if (empty($subject)){
 
-    $result["error"] = TRUE;
-    $result["msg"] = "Subject is missing";
-    echo json_encode($result);
+    $returnArray["error"] = TRUE;
+    $returnArray["msg"] = "Subject is missing";
+    echo json_encode($returnArray);
 
     return;
 }
 //if (empty($msg)){
 //
-//    $result["error"] = TRUE;
-//    $result["msg"] = "Message is missing";
-//    echo json_encode($result);
+//    $returnArray["error"] = TRUE;
+//    $returnArray["msg"] = "Message is missing";
+//    echo json_encode($returnArray);
 //    return;
 //}
 if (empty($host)){
 
-    $result["error"] = TRUE;
-    $result["msg"] = "Host is missing";
-    echo json_encode($result);
+    $returnArray["error"] = TRUE;
+    $returnArray["msg"] = "Host is missing";
+    echo json_encode($returnArray);
     return;
 }
 if (empty($password)){
 
-    $result["error"] = TRUE;
-    $result["msg"] = "Password is missing";
-    echo json_encode($result);
+    $returnArray["error"] = TRUE;
+    $returnArray["msg"] = "Password is missing";
+    echo json_encode($returnArray);
     return;
 }
 
@@ -81,12 +81,12 @@ if (empty($id)){
 
     if ($result){
 
-        $result["error"] = FALSE;
-        $result["msg"] = "Email Template Added Successfully!";
+        $returnArray["error"] = FALSE;
+        $returnArray["msg"] = "Email Template Added Successfully!";
     }
     else{
-        $result["error"] = TRUE;
-        $result["msg"] = "An error occurred during adding email template...!!";
+        $returnArray["error"] = TRUE;
+        $returnArray["msg"] = "An error occurred during adding email template...!!";
     }
 
 }
@@ -100,12 +100,16 @@ else{
     }
 
     if ($result) {
-        $result["error"] = FALSE;
-        $result["msg"] = "Email Template updated Successfully!";
+        $returnArray["error"] = FALSE;
+        $returnArray["msg"] = "Email Template updated Successfully!";
+    }
+    else{
+        $returnArray["error"] = TRUE;
+        $returnArray["msg"] = "An error occurred during updating email template...!!";
     }
 }
 
 $access->disconnect();
-echo json_encode($result);
+echo json_encode($returnArray);
 
 ?>
