@@ -57,7 +57,7 @@ if ($user){
         $transaction = Braintree_Transaction::find($payId);
 
         if ($transaction){
-            $payment = $access->addPayment($result, $payId, $transaction->amount, $transaction->status, "visa");
+            $payment = $access->addPayment($result, $payId, $transaction->amount, $transaction->status, $visaName. ' ' .$visaType);
 
             if (!$payment){
                 $returnArray["success"] = false;
