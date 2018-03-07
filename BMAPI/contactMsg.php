@@ -39,7 +39,7 @@ if ($user){
 
     // what post fields?
     $data = array('to' => ADMIN_EMAIL,
-        'from' => NOREPLAY_EMAIL,
+        'from' => $applicant["email"],
         'subject' => "New Message Received from " .$applicant["name"],
         'msg' => $msg);
 

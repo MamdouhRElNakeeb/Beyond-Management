@@ -272,7 +272,7 @@ $result = $access->getMessages();
         $.ajax({
             url: "../respondMsg.php", // Url to which the request is send
             type: "POST",
-            dataType: 'text',// Type of request to be send, called as method
+            dataType: 'json',// Type of request to be send, called as method
             data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
             contentType: false,       // The content type used when sending data to the server.
             cache: false,             // To unable request pages to be cached
@@ -280,8 +280,13 @@ $result = $access->getMessages();
             success: function(data)   // A function to be called if request succeeds
             {
                 $('#loading').hide();
-                $("#message").html(data);
-                location.reload();
+                $("#message").html(data.message);
+
+                alert(data.message);
+
+                if (!data.error){
+                    location.reload();
+                }
             }
         });
 

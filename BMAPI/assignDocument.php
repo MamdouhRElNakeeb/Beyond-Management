@@ -15,6 +15,7 @@ if ($_SESSION['valid'] != true){
     return;
 }
 
+error_reporting(E_ERROR | E_PARSE);
 
 $doc_id = htmlentities($_REQUEST["doc_id"]);
 $app_id = htmlentities($_REQUEST["app_id"]);
@@ -41,7 +42,35 @@ if ($result){
         $sendAPNDev = $access->sendAPNDev("Your Application Update", "New document is required, please check your application requirements", $applicant["reg_id"]);
 
 
-        $returnArray["message"] = $sendAPNPro["msg"];
+        $emailTemp = $access->getEmailTemp(3);
+        $url = ADMIN.'sendMail.php';
+
+        // what post fields?
+        $data = array('to' => $applicant["email"],
+            'from' => $emailTemp["email"],
+            'subject' => $emailTemp["subject"],
+            'msg' => $emailTemp["msg"],
+            'pass' => $emailTemp["password"],
+            'host' => $emailTemp["host"]);
+
+        // build the urlencoded data
+        $postvars = http_build_query($data);
+
+        // open connection
+        $ch = curl_init();
+
+        // set the url, number of POST vars, POST data
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, count($data));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postvars);
+
+
+        // execute post
+        $result = curl_exec($ch);
+        curl_close($ch);
+
+        $returnArray["message"] = $result;
 
     }
     else{
@@ -54,7 +83,7 @@ if ($result){
 else{
 
     $returnArray["error"] = TRUE;
-    $returnArray["message"] = "Failed assign document!";
+    $returnArray["message"] = "Failed to assign document!";
 }
 
 

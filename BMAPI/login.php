@@ -36,25 +36,37 @@ if ($user){
     // check for password equality
     if ($hash == $secured_password){
 
-        $returnArray["error"] = FALSE;
-        $returnArray["message"] = "Login is Successful";
-        $returnArray["id"] = $user["id"];
+        if ($user["status"] === "activated"){
 
-        $returnArray["fname"] = $user["fname"];
-        $returnArray["mname"] = $user["mname"];
-        $returnArray["lname"] = $user["lname"];
+            $returnArray["error"] = FALSE;
+            $returnArray["message"] = "Login is Successful";
+            $returnArray["id"] = $user["id"];
 
-        $returnArray["phone"] = $user["phone"];
-        $returnArray["strAdd"] = $user["str_address"];
-        $returnArray["city"] = $user["city"];
-        $returnArray["state"] = $user["state"];
-        $returnArray["zipCode"] = $user["zip_code"];
-        $returnArray["country"] = $user["country"];
+            $returnArray["fname"] = $user["fname"];
+            $returnArray["mname"] = $user["mname"];
+            $returnArray["lname"] = $user["lname"];
 
-        $returnArray["email"] = $user["email"];
+            $returnArray["phone"] = $user["phone"];
+            $returnArray["strAdd"] = $user["str_address"];
+            $returnArray["city"] = $user["city"];
+            $returnArray["state"] = $user["state"];
+            $returnArray["zipCode"] = $user["zip_code"];
+            $returnArray["country"] = $user["country"];
 
-        $returnArray["customer_id"] = $user["customer_id"];
-        $access->updateApplicantWithRegID($regID, $user["id"]);
+            $returnArray["email"] = $user["email"];
+
+            $returnArray["customer_id"] = $user["customer_id"];
+            $access->updateApplicantWithRegID($regID, $user["id"]);
+
+        }
+        else{
+
+            $returnArray["error"] = TRUE;
+            $returnArray["message"] = "Account is not activated, Please contact us for more details.";
+
+        }
+
+
     }
     else{
         $returnArray["error"] = TRUE;

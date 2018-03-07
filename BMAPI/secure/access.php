@@ -401,8 +401,8 @@ class access{
 
     // select user form database
     public function selectApplicantFromAppID($app_id){
-        $sql = "SELECT * 
-                FROM applicants   
+        $sql = "SELECT applicants.fname, applicants.lname, applicants.email, applicants.customer_id, applicants.reg_id
+                FROM applicants
                 INNER JOIN applications ON applications.applicant_id = applicants.id
                 WHERE applications.id = '".$app_id."' ";
         $result = $this->conn->query($sql);
@@ -423,6 +423,19 @@ class access{
         }
         // bind 2 parameters of type string to be placed in $sql command
         $statement->bind_param("ss", $regID, $id);
+        $returnValue = $statement->execute();
+        return $returnValue;
+    }
+
+    // update applicant status
+    public function updateApplicantStatus($status, $id){
+        $sql = "UPDATE applicants SET status=? WHERE id=?";
+        $statement = $this->conn->prepare($sql);
+        if(!$statement){
+            throw new Exception($statement->error);
+        }
+        // bind 2 parameters of type string to be placed in $sql command
+        $statement->bind_param("ss", $status, $id);
         $returnValue = $statement->execute();
         return $returnValue;
     }

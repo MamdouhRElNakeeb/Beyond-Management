@@ -126,8 +126,8 @@ $result = $access->getTableContent("applicants");
                                     <th onclick="sortTable(1)">Email</th>
                                     <th onclick="sortTable(2)">Phone</th>
                                     <th onclick="sortTable(3)">Address</th>
-                                    <th onclick="sortTable(4)">Status</th>
                                     <th onclick="sortTable(5)">Date</th>
+                                    <th onclick="sortTable(4)">Status</th>
                                     <th>Action</th>
                                     </thead>
                                     <tbody>
@@ -141,13 +141,35 @@ $result = $access->getTableContent("applicants");
                                             <td><?php echo $row["email"]; ?></td>
                                             <td><?php echo $row["phone"]; ?></td>
                                             <td><?php echo $row["str_address"] . ",\r\n"; ?> <br> <?php echo $row["city"] . ", ";echo $row["state"].", " ;echo $row["zip_code"] . ",\r\n" ; ?> <br> <?php echo $row["country"]; ?></td>
-                                            <td><?php echo $row["status"]; ?></td>
                                             <td><?php echo date( 'M. d, Y h:i A', strtotime($row["created_at"]) ); ?></td>
+                                            <td>
+                                            <?php
+
+                                            if ($row["status"] === "activated"){
+                                                ?>
+
+                                                <button value="<?php echo $row["id"]; ?>" type="button" title="Activated" class="btn btn-success btn-simple btn-xs activate-btn">
+                                                    Activated
+                                                </button>
+
+                                            <?php
+                                            }
+                                            else{
+                                                ?>
+
+                                                <button value="<?php echo $row["id"]; ?>" type="button" title="Deactivated" class="btn btn-danger btn-simple btn-xs deactivate-btn">
+                                                    Deactivated
+                                                </button>
+
+                                                <?php
+                                            }
+                                            ?>
+                                            </td>
                                             <td class="td-actions text-right">
 
-                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="<?php echo $row["id"]. '~' .$row["fname"]. '~' .$row["mname"]. '~' .$row["lname"]. '~' .$row["email"]. '~' .$row["phone"]. '~' .$row["str_address"]. '~'.$row["city"]. '~'.$row["state"]. '~'.$row["zip_code"]. '~' .$row["country"]. '~' .$row["status"]; ?>">
-                                                    <i class="fa fa-edit"></i>
-                                                </button>
+<!--                                                <button rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs edit-btn" value="--><?php //echo $row["id"]. '~' .$row["fname"]. '~' .$row["mname"]. '~' .$row["lname"]. '~' .$row["email"]. '~' .$row["phone"]. '~' .$row["str_address"]. '~'.$row["city"]. '~'.$row["state"]. '~'.$row["zip_code"]. '~' .$row["country"]. '~' .$row["status"]; ?><!--">-->
+<!--                                                    <i class="fa fa-edit"></i>-->
+<!--                                                </button>-->
                                                 <button value="<?php echo $row["id"]; ?>" type="button" rel="tooltip" title="Remove" class="btn btn-danger btn-simple btn-xs remove-btn">
                                                     <i class="fa fa-times"></i>
                                                 </button>
@@ -284,7 +306,7 @@ $result = $access->getTableContent("applicants");
 		                        <span class="input-group-addon">
 			                        <i class="material-icons">format_size</i>
 		                        </span>
-                            <input id="status" type="text" class="form-control" placeholder="Status">
+                            <input id="status" type="text" class="form-control" placeholder="Status" disabled>
                         </div>
                     </div>
                 </form>
@@ -293,6 +315,71 @@ $result = $access->getTableContent("applicants");
             <div class="modal-footer">
                 <button type="reset" class="btn btn-default btn-simple" data-dismiss="modal">Close</button>
                 <button id="upload-ad-btn" type="submit" class="btn btn-info btn-simple">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Activate User Modal -->
+<div class="modal fade" id="activateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Change User Status</h4>
+            </div>
+            <div class="modal-body">
+
+                <form id="activate-form" action="" method="post">
+
+                    <input id="activatedID" style="display: none;">
+
+                    <div class="col-sm-12">
+                        <h6 class="modal-title">Are you sure you want to activate this user?</h6>
+                    </div>
+
+                </form>
+                <br>
+                <br>
+
+                <h6 id='loading_act' style="display: none">loading..</h6>
+                <div id="message_act"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-default btn-simple" data-dismiss="modal">Close</button>
+                <button id="activate-user-btn" type="submit" class="btn btn-info btn-simple">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Deactivate User Modal -->
+<div class="modal fade" id="deactivateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">Change User Status</h4>
+            </div>
+            <div class="modal-body">
+
+                <form id="deactivate-form" action="" method="post">
+
+                    <input id="deactivatedID" style="display: none;">
+
+                    <div class="col-sm-12">
+                        <h6 class="modal-title">Are you sure you want to deactivate this user?</h6>
+                    </div>
+
+                </form>
+                <br>
+                <br>
+                <h6 id='loading_deact' style="display: none">loading..</h6>
+                <div id="message_deact"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" class="btn btn-default btn-simple" data-dismiss="modal">Close</button>
+                <button id="deactivate-user-btn" type="submit" class="btn btn-info btn-simple">Confirm</button>
             </div>
         </div>
     </div>
@@ -323,6 +410,8 @@ $result = $access->getTableContent("applicants");
         return false;
     });
 
+    // TODO: Edit applicant
+
     $('.edit-btn').click(function(){
         /* when the submit button in the modal is clicked, submit the form */
         var paramsArr = $(this).attr("value").split('~');
@@ -347,6 +436,91 @@ $result = $access->getTableContent("applicants");
     $(document).ready(function (e) {
 
         $(".nav li:nth-child(3)").addClass('active');
+
+    });
+
+    $('.activate-btn').click(function(){
+        /* when the submit button in the modal is clicked, submit the form */
+        var paramsArr = $(this).attr("value");
+
+        $('#deactivatedID').val(paramsArr);
+
+        $('#deactivateModal').modal('show');
+        return false;
+    });
+
+    $('.deactivate-btn').click(function(){
+        /* when the submit button in the modal is clicked, submit the form */
+        var paramsArr = $(this).attr("value");
+
+        $('#activatedID').val(paramsArr);
+
+        $('#activateModal').modal('show');
+        return false;
+    });
+
+
+    $('button#activate-user-btn').on('click', function(e){
+
+        $("#message_act").empty();
+        $('#loading_act').show();
+
+        var form = new FormData();
+        form.append("id", $('#activatedID').val());
+        form.append("status", "activated");
+
+        $.ajax({
+            url: "../updateUserStatus.php", // Url to which the request is send
+            type: "POST",
+            dataType: 'json',// Type of request to be send, called as method
+            data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData:false,        // To send DOMDocument or non processed data file it is set to false
+            success: function(data)   // A function to be called if request succeeds
+            {
+                $('#loading_act').hide();
+                $("#message_act").html(data.message);
+
+                alert(data.message);
+
+                if (!data.error){
+                    location.reload();
+                }
+            }
+        });
+
+    });
+
+    $('button#deactivate-user-btn').on('click', function(e){
+
+        $("#message_deact").empty();
+        $('#loading_deact').show();
+
+        var form = new FormData();
+        form.append("id", $('#deactivatedID').val());
+        form.append("status", "deactivated");
+
+        $.ajax({
+            url: "../updateUserStatus.php", // Url to which the request is send
+            type: "POST",
+            dataType: 'json',// Type of request to be send, called as method
+            data: form, // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+            contentType: false,       // The content type used when sending data to the server.
+            cache: false,             // To unable request pages to be cached
+            processData:false,        // To send DOMDocument or non processed data file it is set to false
+            success: function(data)   // A function to be called if request succeeds
+            {
+                $('#loading_deact').hide();
+                $("#message_deact").html(data.message);
+
+                alert(data.message);
+
+                if (!data.error){
+                    location.reload();
+                }
+            }
+        });
 
     });
 

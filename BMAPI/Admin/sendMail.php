@@ -9,6 +9,12 @@
 
 //Import the PHPMailer class into the global namespace
 use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
+require ('PHPMailer/PHPMailer.php');
+require ('PHPMailer/SMTP.php');
+require ('PHPMailer/Exception.php');
 
 $to = htmlentities($_REQUEST["to"]);
 $from = htmlentities($_REQUEST["from"]);
@@ -54,9 +60,9 @@ if (empty($host) && empty($pass)){
 
 // Sending email
     if(mail($to, $subject, $html, $headers)){
-        echo 'Your mail has been sent successfully.';
+        echo 'Message has been sent successfully';
     } else{
-        echo 'Unable to send email. Please try again.';
+        echo 'Unable to send msg. Please try again.';
     }
 }
 else{
@@ -92,11 +98,11 @@ else{
 
     $mail->Subject = $subject;
     $mail->Body = $html;
-    $mail->AltBody = "This is the plain text version of the email content";
+    $mail->AltBody = "Beyond Management Team";
 
     if(!$mail->send())
     {
-        echo "Mailer Error: " . $mail->ErrorInfo;
+        echo "Mailer Error: check email configuration";
     }
     else
     {

@@ -138,7 +138,7 @@ $result = $access->getPayments();
                                             <td><a href="<?php echo "mailto:". $row["email"]; ?>"><?php echo $row["fname"] ." ";echo $row["mname"] ." ";echo $row["lname"]; ?></a></td>
                                             <td><?php echo $row["service"]; ?></td>
                                             <td><?php echo $row["amount"]; ?></td>
-                                            <td><?php echo $row["pay_status"]; ?></td>
+                                            <td><a target="_blank" href="<?php echo BRAINTREE_TRANSACTIONS . MERCHANT_ID . '/transactions/' . $row['payment_id']; ?>" ><button type="button" class="btn btn-success">Check Status</button></a></td>
                                             <td><?php echo $row["pay_date"]; ?></td>
 <!--                                            <td class="td-actions text-right">-->
 <!--                                                <button type="button" value="--><?php //echo $row["id"]; ?><!--" rel="tooltip" title="Edit" class="btn btn-success btn-simple btn-xs" style="display: none;">-->
