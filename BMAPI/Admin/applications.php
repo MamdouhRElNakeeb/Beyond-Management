@@ -329,7 +329,6 @@ $documents = $access->getTableContent("documents");
     $('.fab-add').click(function(){
         /* when the submit button in the modal is clicked, submit the form */
 
-
         $('#id').val("");
         $('#applicant').val("");
         $('#service').val("");
@@ -429,15 +428,7 @@ $documents = $access->getTableContent("documents");
                     var url = returnedData[i].url;
 
                     var tdActions = document.createElement("td");
-                    tdActions.innerHTML =
-                        '<button rel="tooltip" title="Approve" class="btn btn-success btn-simple btn-xs approve-btn" value="' + returnedData[i].id + '">' +
-                        '<i class="fa fa-check"></i>' +
-                        '</button>' +
-                        '<button value="' + returnedData[i].id + '" type="button" rel="tooltip" title="Reject" class="btn btn-danger btn-simple btn-xs reject-btn">' +
-                        '<i class="fa fa-times"></i>' +
-                        '</button>';
 
-                    tdActions.style.display = 'none';
 
                     if (returnedData[i].status != "new"){
 
@@ -450,8 +441,11 @@ $documents = $access->getTableContent("documents");
                                 echo REQ_SUB;
                                 ?>' + url;
 
-                            img.style = 'height: 100px; width: auto';
-                            tdUrl.appendChild(img);
+                            var imgUrl = document.createElement("url"); //or grab it by tagname etc
+
+                            imgUrl.innerHTML = '<a target="_blank" href="' + img.src + '"><img style="height: 100px; width: auto" src="'+ img.src + '"/></a>';
+
+                            tdUrl.appendChild(imgUrl);
                         }
                         else{
                             var link = document.createElement("url"); //or grab it by tagname etc
@@ -460,7 +454,19 @@ $documents = $access->getTableContent("documents");
 
                             tdUrl.appendChild(link);
                         }
-                        tdActions.style.display = 'block';
+
+                        tdActions.innerHTML = '';
+
+                    }
+                    if (returnedData[i].status === "waiting"){
+
+                        tdActions.innerHTML =
+                            '<button rel="tooltip" title="Approve" id="approve-btn" class="btn btn-success btn-simple btn-xs approve-btn" value="' + returnedData[i].id + '">' +
+                            '<i class="fa fa-check"></i>' +
+                            '</button>' +
+                            '<button value="' + returnedData[i].id + '" type="button" rel="tooltip" title="Reject" id="reject-btn" class="btn btn-danger btn-simple btn-xs reject-btn">' +
+                            '<i class="fa fa-times"></i>' +
+                            '</button>';
                     }
 
 
@@ -482,7 +488,9 @@ $documents = $access->getTableContent("documents");
         return false;
     });
 
-    $('.approve-btn').click(function(){
+
+    $(document).on("click",".approve-btn",function(){
+
         /* when the submit button in the modal is clicked, submit the form */
         var req_id = $(this).attr("value");
 
@@ -490,8 +498,6 @@ $documents = $access->getTableContent("documents");
         form.append("req_id", req_id);
         form.append("status", "approved");
 
-        alert("approved");
-
         $.ajax({
             url: "../updateDocStatus.php", // Url to which the request is send
             type: "POST",
@@ -508,10 +514,10 @@ $documents = $access->getTableContent("documents");
             }
         });
 
-        return false;
     });
 
-    $('.reject-btn').click(function(){
+    $(document).on("click",".reject-btn",function(){
+
         /* when the submit button in the modal is clicked, submit the form */
         var req_id = $(this).attr("value");
 
@@ -519,8 +525,6 @@ $documents = $access->getTableContent("documents");
         form.append("req_id", req_id);
         form.append("status", "rejected");
 
-        alert("rejected");
-
         $.ajax({
             url: "../updateDocStatus.php", // Url to which the request is send
             type: "POST",
@@ -538,6 +542,7 @@ $documents = $access->getTableContent("documents");
         });
 
         return false;
+
     });
 
     var newDoc = "";
@@ -571,8 +576,12 @@ $documents = $access->getTableContent("documents");
 
                 $('#loading_doc').hide();
                 $("#message_doc").html(data.message);
+
                 alert(data.message);
-                location.reload();
+
+                if (!data.error){
+                    location.reload();
+                }
             }
         });
     });

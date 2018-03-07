@@ -16,6 +16,8 @@ if ($_SESSION['valid'] != true){
 }
 
 
+error_reporting(E_ERROR | E_PARSE);
+
 $req_id = htmlentities($_REQUEST["req_id"]);
 $status = htmlentities($_REQUEST["status"]);
 
@@ -40,8 +42,6 @@ if ($result){
         $sendAPNDev = $access->sendAPNDev("Document Status Update", "Your document status is changed to " .$status, $applicant["reg_id"]);
 
 
-        $returnArray["message"] = $sendAPNPro["msg"];
-
         $emailTemp = $access->getEmailTemp(3);
         $url = ADMIN . 'sendMail.php';
 
@@ -65,8 +65,10 @@ if ($result){
 
 
         // execute post
-        curl_exec($ch);
+        $result = curl_exec($ch);
         curl_close($ch);
+
+        $returnArray["message"] = $result;
 
     }
     else{
