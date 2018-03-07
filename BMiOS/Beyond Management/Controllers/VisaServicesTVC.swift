@@ -41,7 +41,11 @@ class VisaServicesTVC: UITableViewController{
         
         indicator.startAnimating()
         
-        Alamofire.request(Urls.VISA_SERVICES, method: .get).responseJSON{
+        let params: Parameters = [
+            "user_id": UserDefaults.standard.integer(forKey: "id")
+        ]
+        
+        Alamofire.request(Urls.VISA_SERVICES, method: .get, parameters: params).responseJSON{
             
             response in
             
@@ -49,23 +53,43 @@ class VisaServicesTVC: UITableViewController{
             
             if let result = response.result.value {
                 
-                let jsonArr = result as! NSArray
+                let json = result as! NSDictionary
                 
-                for i in 0 ..< jsonArr.count {
-                    let visaObj = jsonArr.object(at: i) as! NSDictionary
-                    self.visaArr.append(Visa.init(id: Int(visaObj.value(forKey: "id") as! String)!,
-                                             name: visaObj.value(forKey: "name") as! String,
-                                             imgUrl: visaObj.value(forKey: "img") as! String,
-                                             info: visaObj.value(forKey: "info") as! String,
-                                             basicPrice: Int(visaObj.value(forKey: "basic_price") as! String)!,
-                                             basicInfo: visaObj.value(forKey: "basic_info") as! String,
-                                             interPrice: Int(visaObj.value(forKey: "inter_price") as! String)!,
-                                             interInfo: visaObj.value(forKey: "inter_info") as! String,
-                                             advPrice: Int(visaObj.value(forKey: "advanced_price") as! String)!,
-                                             advInfo: visaObj.value(forKey: "advanced_info") as! String))
+                if !(json.value(forKey: "error") as! Bool) {
+                
+                    let jsonArr = json.value(forKey: "services") as! NSArray
+                    
+                    for i in 0 ..< jsonArr.count {
+                        let visaObj = jsonArr.object(at: i) as! NSDictionary
+                        self.visaArr.append(Visa.init(id: Int(visaObj.value(forKey: "id") as! String)!,
+                                                      name: visaObj.value(forKey: "name") as! String,
+                                                      imgUrl: visaObj.value(forKey: "img") as! String,
+                                                      info: visaObj.value(forKey: "info") as! String,
+                                                      basicPrice: Int(visaObj.value(forKey: "basic_price") as! String)!,
+                                                      basicInfo: visaObj.value(forKey: "basic_info") as! String,
+                                                      interPrice: Int(visaObj.value(forKey: "inter_price") as! String)!,
+                                                      interInfo: visaObj.value(forKey: "inter_info") as! String,
+                                                      advPrice: Int(visaObj.value(forKey: "advanced_price") as! String)!,
+                                                      advInfo: visaObj.value(forKey: "advanced_info") as! String))
+                    }
+                    
+                    self.tableView.reloadData()
+                    
+                }
+                else {
+                    let alert = UIAlertController(title: "Error", message: json.value(forKey: "message") as? String, preferredStyle: UIAlertControllerStyle.alert)
+                    alert.addAction(UIAlertAction(title: "OK", style: UIAlertActionStyle.default, handler: {action in
+                        
+                        UserDefaults.standard.set(false, forKey: "login")
+                        let loginVC =  self.storyboard?.instantiateViewController(withIdentifier: "loginVC") as! LoginVC
+                        self.present(loginVC, animated: true, completion: nil)
+                        
+                    }))
+                    self.present(alert, animated: true, completion: nil)
+                    
+                    return
                 }
                 
-                self.tableView.reloadData()
             }
             
             self.indicator.stopAnimating()
