@@ -27,7 +27,7 @@ $applicant = $access->selectApplicantWithId($userID);
 if ($applicant){
 
 
-    if ($applicant["status"] === "Activated"){
+    if ($applicant["status"] === "activated"){
 
         $result = $access->getTableContent("immigration");
 
@@ -48,7 +48,6 @@ if ($applicant){
                 $b["advanced_price"] = $row["advanced_price"];
                 array_push($a,$b);
             }
-            echo json_encode($a);
 
             $returnArray["error"] = FALSE;
             $returnArray["services"] = $a;
